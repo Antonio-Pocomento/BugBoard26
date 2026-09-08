@@ -27,7 +27,6 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // Hash della password (es. BCrypt), MAI la password in chiaro.
     @NotBlank
     @Column(nullable = false)
     private String passwordHash;
