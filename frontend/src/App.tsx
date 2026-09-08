@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { type User } from './model/User';
 import './App.css'
 import {login} from "./services/authService.ts";
+import {RegisterForm} from "./components/RegisterForm.tsx";
 
 function App() {
 
@@ -39,31 +40,68 @@ const handleLoginSubmit = async (e: React.FormEvent) => {
     if(currentUser)
     {
         return (
-            <div>
-                <h1>Benvenuto {currentUser.email}!</h1>
-                <div>
-                    <p><strong>ID:</strong> {currentUser.id}</p>
-                    <p><strong>Ruolo:</strong> {currentUser.role}</p>
-                    <button onClick={handleLogout}>Logout</button>
-                </div>
-            </div>
+            <RegisterForm></RegisterForm>
         );
     }
 
   return (
-    <form onSubmit={handleLoginSubmit}>
-        <h2>Accedi</h2>
-        {error && (<div style={{color: 'red'}}>{error}</div>)}
-        <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <div style={{
+          display:'flex',
+          justifyContent:'center',
+          alignItems:'center',
+          height:'100vh',
+          fontFamily:'sans-serif'
+      }}>
+        <form onSubmit={handleLoginSubmit}
+        style={{
+            backgroundColor:'white',
+            padding:'30px',
+            borderRadius:'8px',
+            boxShadow:'0 4px 12px rgba(0,0,0,0.1)',
+            width:'100%',
+            maxWidth:'400px'
+        }}>
+            <h2 style={{textAlign:'center',marginBottom:'20px'}}>Accedi</h2>
+            {error && (<div style={{color: 'red', marginBottom:'15px', padding:'10px', backgroundColor:'#ffe6e6', borderRadius:'4px'}}>{error}</div>)}
 
-        <label>Password</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <div style={{marginBottom:'15px'}}>
+                <label style={{display:'block', marginBottom:'5px'}}>Email</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                       style={{
+                           width:'100%',
+                           padding:'10px',
+                           boxSizing:'border-box',
+                           borderRadius:'4px',
+                           border:'1px solid #ccc'
+                       }}
+                       required />
 
-        <button type="submit" disabled={isLoading}>Login</button>
+                <label style={{display:'block', marginBottom:'5px'}}>Password</label>
+                <input type="password" minLength={8} value={password} onChange={(e) => setPassword(e.target.value)}
+                       style={{
+                           width:'100%',
+                           padding:'10px',
+                           boxSizing:'border-box',
+                           borderRadius:'4px',
+                           border:'1px solid #ccc'
+                       }}
+                       required />
 
-        {isLoading ? 'Accesso in corso...' : 'Login'}
-    </form>
+                <button type="submit" disabled={isLoading}
+                style={{
+                    width:'100%',
+                    padding:'12px',
+                    backgroundColor: isLoading ? '#a0c4ff' : '#0056b3',
+                    color: 'white',
+                    border:'none',
+                    borderRadius:'4px',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    fontStyle:'16px',
+                    marginTop:'12px'
+                }}>{isLoading ? 'Accesso in corso...' : 'Login'}</button>
+            </div>
+        </form>
+      </div>
   )
 }
 

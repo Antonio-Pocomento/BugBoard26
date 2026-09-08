@@ -2,14 +2,13 @@ package com.bugboard26.backend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "issues")
@@ -18,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Issue {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,5 +26,42 @@ public class Issue {
     @Column(nullable = false)
     private String title;
 
-    // TODO
+    @NotBlank
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String description;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private IssueType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private Priority priority;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private IssueStatus status = IssueStatus.TODO;
+
+    @Column(nullable = true)
+    private String imagePath;
+
+    @NotNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "assignee_id", nullable = true)
+    private User assignee;
+
+    @NotNull
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = Instant.now();
+    }
 }

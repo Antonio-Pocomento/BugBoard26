@@ -1,6 +1,7 @@
+import {APP_CONFIG} from "../config/config.ts";
 import { type LoginCredentials, type AuthResponse } from "../model/User.ts";
 
-const API_URL = "http://localhost:8080/api/auth";
+const API_URL = APP_CONFIG.BASE_URL + "/auth";
 
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     const response = await fetch(`${API_URL}/login`, {
