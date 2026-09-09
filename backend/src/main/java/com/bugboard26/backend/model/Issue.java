@@ -35,9 +35,10 @@ public class Issue {
     @Column(nullable = false)
     private IssueType type;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(nullable = true)
-    private Priority priority;
+    @Column(nullable = false)
+    private IssuePriority priority = IssuePriority.UNKNOWN;
 
     @NotNull
     @Enumerated(EnumType.STRING)

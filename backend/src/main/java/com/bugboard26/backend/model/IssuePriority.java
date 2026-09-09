@@ -1,6 +1,7 @@
 package com.bugboard26.backend.model;
 
-public enum Priority {
+public enum IssuePriority {
+    UNKNOWN,
     LOW,
     MEDIUM,
     HIGH,

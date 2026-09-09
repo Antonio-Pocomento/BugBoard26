@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {register} from "../services/adminService.ts";
 import {type Role} from "../model/User.ts";
+import './RegButton.css';
 
 interface RegisterFormProps
 {
@@ -55,7 +56,7 @@ export function RegisterForm({onUserCreated}:RegisterFormProps) {
                 <option value="NORMAL">Normal</option>
                 <option value="READONLY">ReadOnly</option>
             </select>
-            <button type="submit" disabled={isLoading}></button>
+            <button className={"submitReg"} type="submit" disabled={isLoading}></button>
         </form>
     );
 

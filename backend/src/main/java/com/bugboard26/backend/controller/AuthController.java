@@ -31,7 +31,7 @@ public class AuthController {
         Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Credenziali non valide");
+                    .body("Invalid Credentials");
         }
 
         User user = userOptional.get();
@@ -39,7 +39,7 @@ public class AuthController {
 
         if (!isPasswordValid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Credenziali non valide.");
+                    .body("Invalid Credentials");
         }
 
         String token = jwtService.generateToken(user);
