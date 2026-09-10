@@ -4,7 +4,7 @@ import {type CreateIssueRequest} from "../model/Issue.ts";
 const API_URL = APP_CONFIG.BASE_URL;
 const REGISTER_ISSUE = API_URL + "/issues";
 
-export const register = async (issue: CreateIssueRequest) => {
+export const createIssue = async (issue: CreateIssueRequest) => {
     const token = localStorage.getItem('JWT');
 
     const response = await fetch(REGISTER_ISSUE, {
@@ -17,6 +17,7 @@ export const register = async (issue: CreateIssueRequest) => {
     });
 
     if (!response.ok) {
-        throw new Error('Errore nella registrazione');
+        const errorBody = await response.json().catch(()=>null);
+        throw new Error(errorBody?.message ?? "Issue Creation Error")
     }
 }

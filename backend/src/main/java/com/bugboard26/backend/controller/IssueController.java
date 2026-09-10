@@ -1,13 +1,12 @@
 package com.bugboard26.backend.controller;
 
 import com.bugboard26.backend.dto.CreateIssueRequest;
-import com.bugboard26.backend.model.Issue;
-import com.bugboard26.backend.model.IssuePriority;
-import com.bugboard26.backend.model.IssueType;
-import com.bugboard26.backend.model.User;
+import com.bugboard26.backend.model.*;
 import com.bugboard26.backend.repository.IssueRepository;
+import com.bugboard26.backend.repository.IssueSpecification;
 import com.bugboard26.backend.repository.UserRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,11 +45,16 @@ public class IssueController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    // TODO
-    /*@GetMapping
-    public ResponseEntity<?> getAllIssues() {
-        @RequestParam(required = false) IssueType type;
-    }*/
+    @GetMapping
+    public ResponseEntity<?> getAllIssues(
+            @RequestParam(required = false) IssueType type,
+            @RequestParam(required = false) IssueStatus status,
+            @RequestParam(required = false) IssuePriority priority) {
+        Specification<Issue> spec = Specification.where(IssueSpecification.hasType(type))
+                .and(IssueSpecification.hasStatus(status))
+                .and(IssueSpecification.hasPriority(priority));
+        return ResponseEntity.ok(issueRepository.findAll(spec));
+    }
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

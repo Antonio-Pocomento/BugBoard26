@@ -3,12 +3,7 @@ import {register} from "../services/adminService.ts";
 import {type Role} from "../model/User.ts";
 import './RegButton.css';
 
-interface RegisterFormProps
-{
-    onUserCreated?: () => void;
-}
-
-export function RegisterForm({onUserCreated}:RegisterFormProps) {
+export function RegisterForm() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -37,8 +32,6 @@ export function RegisterForm({onUserCreated}:RegisterFormProps) {
             setPassword('');
             setConfirmPassword('');
             setRole('READONLY');
-
-            if(onUserCreated) onUserCreated();
         }catch (err){
             setError(err instanceof Error ? err.message : 'Errore durante la registrazione');
         } finally {

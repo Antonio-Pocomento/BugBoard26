@@ -25,7 +25,7 @@ export function Dashboard({ onLogout }: DashboardProps) {
             <br /><br />
             <MyButton title="Registrazione Utenti" onClick={() => navigate('/register')} />
             <br /><br />
-            <MyButton title="Segnala Problemi" onClick={() => navigate('/register')} />
+            <MyButton title="Segnala Problemi" onClick={() => navigate('/issue')} />
             <br /><br />
             <MyButton title="Log-out" onClick={handleLogoutClick} />
         </div>

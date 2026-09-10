@@ -9,9 +9,9 @@ export interface Issue {
     type: IssueType;
     priority: IssuePriority;
     status: IssueStatus;
-    imagePath: string;
+    imagePath?: string | null;
     author: number;
-    assignee: number;
+    assignee?: number | null;
     createdAt: string;
 }
 
@@ -19,6 +19,6 @@ export interface CreateIssueRequest {
     title: string;
     description: string;
     type: IssueType;
-    priority: IssuePriority;
-    assigneeEmail: string;
+    priority?: IssuePriority;
+    assigneeEmail?: string;
 }

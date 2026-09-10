@@ -6,6 +6,10 @@ import com.bugboard26.backend.model.IssueStatus;
 import com.bugboard26.backend.model.IssueType;
 import org.springframework.data.jpa.domain.Specification;
 
+/// root = Issue
+/// query = CriteriaQuery
+/// cb = CriteriaBuilder
+
 public class IssueSpecification {
     public static Specification<Issue> hasType(IssueType type) {
         return (root, query, cb) ->
@@ -14,11 +18,11 @@ public class IssueSpecification {
 
     public static Specification<Issue> hasStatus(IssueStatus status) {
         return (root, query, cb) ->
-                status==null ? null : cb.equal(root.get("type"), status);
+                status==null ? null : cb.equal(root.get("status"), status);
     }
 
     public static Specification<Issue> hasPriority(IssuePriority priority) {
         return (root, query, cb) ->
-                priority==null ? null : cb.equal(root.get("type"), priority);
+                priority==null ? null : cb.equal(root.get("priority"), priority);
     }
 }
