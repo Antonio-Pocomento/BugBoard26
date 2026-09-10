@@ -1,6 +1,7 @@
 package com.bugboard26.backend.controller;
 
 import com.bugboard26.backend.dto.CreateIssueRequest;
+import com.bugboard26.backend.dto.GetIssueRequest;
 import com.bugboard26.backend.model.*;
 import com.bugboard26.backend.repository.IssueRepository;
 import com.bugboard26.backend.repository.IssueSpecification;
@@ -46,14 +47,18 @@ public class IssueController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllIssues(
-            @RequestParam(required = false) IssueType type,
-            @RequestParam(required = false) IssueStatus status,
-            @RequestParam(required = false) IssuePriority priority) {
-        Specification<Issue> spec = Specification.where(IssueSpecification.hasType(type))
-                .and(IssueSpecification.hasStatus(status))
-                .and(IssueSpecification.hasPriority(priority));
+    public ResponseEntity<?> getAllIssues(GetIssueRequest request) {
+        Specification<Issue> spec = Specification.where(IssueSpecification.hasType(request.getType()))
+                .and(IssueSpecification.hasStatus(request.getStatus()))
+                .and(IssueSpecification.hasPriority(request.getPriority()));
         return ResponseEntity.ok(issueRepository.findAll(spec));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Issue> getIssue(@PathVariable Long id) {
+        return issueRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     private User getCurrentUser() {

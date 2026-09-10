@@ -1,4 +1,4 @@
-h1 {
+/* h1 {
     color: black;
     font-weight: bold;
     font-family: "Cascadia Code" ;
@@ -12,4 +12,99 @@ button.dashboard {
     border-radius: 20px;
     font: bold;
 }
+*/
 
+.dashboard-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3f7b9c;
+}
+
+.dashboard-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+    width: 100%;
+    max-width: 560px;
+    padding: 3rem 2.5rem;
+
+    background: linear-gradient(165deg, #ffffff 0%, #f3f7fa 100%);
+    border-radius: 32px;
+    box-shadow:
+            0 1px 2px rgba(10, 35, 55, 0.18),
+            0 8px 16px rgba(10, 35, 55, 0.16),
+            0 24px 48px rgba(10, 35, 55, 0.20),
+            0 0 60px rgba(23, 196, 230, 0.12),
+            inset 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.dashboard-panel h1 {
+    color: black;
+    font-weight: bold;
+    font-family: "Cascadia Code", sans-serif;
+    margin: 0;
+    text-align: center;
+}
+
+.dashboard-button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.dashboard-button {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+    max-width: 420px;
+    height: 60px;
+    text-align: center;
+    font-family: "Cascadia Code", sans-serif;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+
+    border: 3px solid #17c4e6;
+    border-radius: 999px;
+    background: linear-gradient(to bottom, #ffffff 0%, #eef3f7 45%, #c7d6e0 100%);
+    box-shadow:
+            0 4px 8px rgba(0, 0, 0, 0.25),
+            inset 0 1px 1px rgba(255, 255, 255, 0.9);
+
+    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+}
+
+.dashboard-button::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 6%;
+    width: 88%;
+    height: 42%;
+    border-radius: 999px / 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+
+.dashboard-button:hover {
+    filter: brightness(1.04);
+}
+
+.dashboard-button:active {
+    transform: translateY(2px);
+    box-shadow:
+            0 1px 3px rgba(0, 0, 0, 0.25),
+            inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.dashboard-button:disabled {
+    filter: grayscale(0.5) brightness(0.9);
+    cursor: not-allowed;
+}

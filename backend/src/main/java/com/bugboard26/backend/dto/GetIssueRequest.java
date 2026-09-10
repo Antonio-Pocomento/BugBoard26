@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class IssueRequest {
+public class GetIssueRequest {
     private IssueType type;
     private IssueStatus status;
     private IssuePriority priority;

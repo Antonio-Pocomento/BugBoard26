@@ -6,6 +6,8 @@ import { Dashboard } from "./pages/Dashboard.tsx";
 import { RegisterForm } from "./components/RegisterForm.tsx";
 import { IssueForm } from "./components/IssueForm.tsx";
 import "./App.css";
+import {IssueViewer} from "./components/IssueViewer.tsx";
+import {Issue} from "./components/Issue.tsx";
 
 function App() {
 
@@ -46,6 +48,8 @@ function App() {
                 <Route path="/" element={<Dashboard onLogout={handleLogout}/>}/>
                 <Route path="/register" element={<RegisterForm />} />
                 <Route path="/issue" element={<IssueForm />} />
+                <Route path="/issueViewer" element={<IssueViewer />} />
+                <Route path="/issueViewer/:id" element={<Issue />} />
                 {/* qualsiasi path sconosciuto riporta alla Dashboard */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

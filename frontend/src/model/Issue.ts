@@ -22,3 +22,9 @@ export interface CreateIssueRequest {
     priority?: IssuePriority;
     assigneeEmail?: string;
 }
+
+export interface GetIssueRequest {
+    type?: IssueType;
+    status?: IssueStatus;
+    priority?: IssuePriority;
+}

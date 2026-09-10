@@ -1,5 +1,6 @@
 package com.bugboard26.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,10 +52,12 @@ public class Issue {
     @NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "author_id", nullable = false)
+    @JsonIgnoreProperties({"passwordHash", "hibernateLazyInitializer", "handler"})
     private User author;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "assignee_id", nullable = true)
+    @JsonIgnoreProperties({"passwordHash", "hibernateLazyInitializer", "handler"})
     private User assignee;
 
     @NotNull
