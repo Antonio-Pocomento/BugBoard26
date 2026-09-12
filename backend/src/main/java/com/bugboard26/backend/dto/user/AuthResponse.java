@@ -1,6 +1,5 @@
-package com.bugboard26.backend.dto;
+package com.bugboard26.backend.dto.user;
 
-import com.bugboard26.backend.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AuthResponse {
     private String token;
-    private User user;
+    private UserResponse user;
 }

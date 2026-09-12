@@ -1,8 +1,10 @@
 package com.bugboard26.backend.controller;
 
+import com.bugboard26.backend.dto.CreateCommentRequest;
 import com.bugboard26.backend.dto.CreateIssueRequest;
 import com.bugboard26.backend.dto.GetIssueRequest;
 import com.bugboard26.backend.model.*;
+import com.bugboard26.backend.repository.CommentRepository;
 import com.bugboard26.backend.repository.IssueRepository;
 import com.bugboard26.backend.repository.IssueSpecification;
 import com.bugboard26.backend.repository.UserRepository;
@@ -12,16 +14,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/issues")
 public class IssueController {
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
-    public IssueController(IssueRepository issueRepository, UserRepository userRepository) {
+    public IssueController(IssueRepository issueRepository, UserRepository userRepository, CommentRepository commentRepository) {
         this.issueRepository = issueRepository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
 
     @PostMapping
@@ -59,6 +64,30 @@ public class IssueController {
         return issueRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/comments")
+    public ResponseEntity getComments(@PathVariable Long id) {
+        if(!issueRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List comments = commentRepository.findCommentsByIssue_Id(id);
+        return ResponseEntity.ok(comments);
+    }
+
+    @PostMapping("/{id}/comments")
+    public ResponseEntity createComment(@PathVariable Long id, @RequestBody @Valid CreateCommentRequest comment) {
+        if(!issueRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        User currentUser = getCurrentUser();
+        Comment c = new Comment();
+        c.setText(comment.getText());
+        c.setAuthor(currentUser);
+        c.setIssue(issueRepository.findById(id).get());
+        commentRepository.save(c);
+        return ResponseEntity.status(HttpStatus.CREATED).body(c);
     }
 
     private User getCurrentUser() {

@@ -1,4 +1,4 @@
-package com.bugboard26.backend.dto;
+package com.bugboard26.backend.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

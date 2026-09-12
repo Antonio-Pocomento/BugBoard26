@@ -1,6 +1,7 @@
 package com.bugboard26.backend.controller;
 
-import com.bugboard26.backend.dto.CreateUserRequest;
+import com.bugboard26.backend.dto.user.CreateUserRequest;
+import com.bugboard26.backend.dto.user.UserResponse;
 import com.bugboard26.backend.model.User;
 import com.bugboard26.backend.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -34,6 +35,6 @@ public class AdminController {
 
         User savedUser = userRepository.save(user);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(savedUser));
     }
 }

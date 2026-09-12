@@ -1,4 +1,4 @@
-package com.bugboard26.backend.dto;
+package com.bugboard26.backend.dto.user;
 
 import com.bugboard26.backend.model.Role;
 import jakarta.validation.constraints.Email;

@@ -1,7 +1,8 @@
 package com.bugboard26.backend.controller;
 
-import com.bugboard26.backend.dto.AuthResponse;
-import com.bugboard26.backend.dto.LoginRequest;
+import com.bugboard26.backend.dto.user.AuthResponse;
+import com.bugboard26.backend.dto.user.LoginRequest;
+import com.bugboard26.backend.dto.user.UserResponse;
 import com.bugboard26.backend.model.User;
 import com.bugboard26.backend.repository.UserRepository;
 import com.bugboard26.backend.security.JwtService;
@@ -44,7 +45,7 @@ public class AuthController {
         }
 
         String token = jwtService.generateToken(user);
-        AuthResponse authResponse = new AuthResponse(token, user);
+        AuthResponse authResponse = new AuthResponse(token, new UserResponse(user));
 
         return ResponseEntity.ok(authResponse);
     }

@@ -49,3 +49,44 @@
     filter: grayscale(0.5) brightness(0.9);
     cursor: not-allowed;
 }
+
+.title-label{
+    color: red;
+    text-align: left;
+    font-family: "Comic Sans MS";*/
+    font-size: 40px;
+}
+
+.description-label{
+    color: red;
+    text-align: left;
+    font-family: "Comic Sans MS";
+    font-size: 20px;
+}
+
+.type-label{
+    color: red;
+    text-align: left;
+    font-family: "Comic Sans MS";
+    font-size: 20px;
+}
+
+.priority-label{
+    color: red;
+    text-align: left;
+    font-family: "Comic Sans MS";
+    font-size: 20px;
+}
+
+.status-label{
+    color: red;
+    text-align: left;
+    font-family: "Comic Sans MS";
+    font-size: 20px;
+}
+.creation-label{
+    color: red;
+    text-align: left;
+    font-family: "Comic Sans MS";
+    font-size: 20px;
+}

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {type Issue, type IssuePriority, type IssueStatus, type IssueType} from "../model/Issue.ts";
-import {getIssue} from "../services/issueService.ts";
+import {getIssues} from "../services/issueService.ts";
 import "./IssueViewer.css"
 import {useNavigate} from "react-router-dom";
 
@@ -26,7 +26,7 @@ export function IssueViewer(){
         setError(null);
         try {
             setIsLoading(true);
-            const data = await getIssue({ type, status, priority });
+            const data = await getIssues({ type, status, priority });
             setIssues(data);
             setSuccess("Issue caricate con successo!");
         } catch (err) {

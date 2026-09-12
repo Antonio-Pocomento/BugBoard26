@@ -11,7 +11,10 @@ import {Issue} from "./components/Issue.tsx";
 
 function App() {
 
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [currentUser, setCurrentUser] = useState<User | null>(() => {
+        const storedUser = localStorage.getItem('user');
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -27,6 +30,7 @@ function App() {
         try {
             const response = await login({ email, password });
             localStorage.setItem('JWT', response.token);
+            localStorage.setItem('user', JSON.stringify(response.user));
             setCurrentUser(response.user);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Errore durante il login");
@@ -40,6 +44,7 @@ function App() {
         setEmail('');
         setPassword('');
         localStorage.removeItem("JWT");
+        localStorage.removeItem('user');
     };
 
     if (currentUser) {
