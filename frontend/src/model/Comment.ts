@@ -1,19 +1,13 @@
-export interface Author {
-    id: number;
-    email: string;
-    role: string;
-    createdAt: string;
-}
+import type { User } from "./User";
 
-export interface Comment
-{
+export interface Comment {
     id: number;
     text: string;
-    author: Author;
-    issue: number;
+    author: User;
+    issueId: number;
     createdAt: string;
 }
 
-export interface CreateCommentRequest{
+export interface CreateCommentRequest {
     text: string;
 }

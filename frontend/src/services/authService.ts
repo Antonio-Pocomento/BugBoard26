@@ -12,9 +12,9 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
         body: JSON.stringify(credentials),
     });
 
-    if(!response.ok)
-    {
-        throw new Error('Email o password non corretti.');
+    if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.message ?? 'Login error');
     }
 
     const data: AuthResponse = await response.json();

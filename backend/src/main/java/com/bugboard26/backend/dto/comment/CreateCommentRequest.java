@@ -1,4 +1,4 @@
-package com.bugboard26.backend.dto;
+package com.bugboard26.backend.dto.comment;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

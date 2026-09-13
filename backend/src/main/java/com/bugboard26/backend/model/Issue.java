@@ -60,12 +60,23 @@ public class Issue {
     @JsonIgnoreProperties({"passwordHash", "hibernateLazyInitializer", "handler"})
     private User assignee;
 
+    @Column(nullable = true)
+    private Instant resolvedAt;
+
     @NotNull
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(nullable = true)
+    private Instant updatedAt;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = Instant.now();
     }
 }

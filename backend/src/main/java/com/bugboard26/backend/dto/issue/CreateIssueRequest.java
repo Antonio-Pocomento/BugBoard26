@@ -1,4 +1,4 @@
-package com.bugboard26.backend.dto;
+package com.bugboard26.backend.dto.issue;
 
 import com.bugboard26.backend.model.IssueType;
 import com.bugboard26.backend.model.IssuePriority;

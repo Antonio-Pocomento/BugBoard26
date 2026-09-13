@@ -17,6 +17,7 @@ export const register = async (credentials: CreateUserRequest) => {
     });
 
     if (!response.ok) {
-        throw new Error('Errore nella registrazione');
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.message ?? 'New user registration error');
     }
 }

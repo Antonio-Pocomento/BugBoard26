@@ -1,24 +1,26 @@
 package com.bugboard26.backend.controller;
 
-import com.bugboard26.backend.dto.CreateCommentRequest;
-import com.bugboard26.backend.dto.CreateIssueRequest;
-import com.bugboard26.backend.dto.GetIssueRequest;
+import com.bugboard26.backend.exception.ResourceNotFoundException;
 import com.bugboard26.backend.model.*;
-import com.bugboard26.backend.repository.CommentRepository;
-import com.bugboard26.backend.repository.IssueRepository;
-import com.bugboard26.backend.repository.IssueSpecification;
-import com.bugboard26.backend.repository.UserRepository;
+import com.bugboard26.backend.repository.*;
+import com.bugboard26.backend.dto.comment.*;
+import com.bugboard26.backend.dto.issue.*;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/issues")
 public class IssueController {
+    private static final List<String> ALLOWED_SORT_FIELDS =
+            List.of("createdAt", "updatedAt", "resolvedAt", "priority", "status", "type", "title");
+
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
@@ -30,7 +32,7 @@ public class IssueController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createIssue(@RequestBody @Valid CreateIssueRequest request) {
+    public ResponseEntity<IssueResponse> createIssue(@RequestBody @Valid CreateIssueRequest request) {
         User currentUser = getCurrentUser();
 
         Issue issue = new Issue();
@@ -48,46 +50,66 @@ public class IssueController {
         }
 
         Issue saved = issueRepository.save(issue);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new IssueResponse(saved));
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllIssues(GetIssueRequest request) {
+    public ResponseEntity<List<IssueResponse>> getAllIssues(GetIssueRequest request) {
         Specification<Issue> spec = Specification.where(IssueSpecification.hasType(request.getType()))
                 .and(IssueSpecification.hasStatus(request.getStatus()))
-                .and(IssueSpecification.hasPriority(request.getPriority()));
-        return ResponseEntity.ok(issueRepository.findAll(spec));
+                .and(IssueSpecification.hasPriority(request.getPriority()))
+                .and(IssueSpecification.hasAssignee(request.getAssigneeId()))
+                .and(IssueSpecification.hasAuthor(request.getAuthorId()))
+                .and(IssueSpecification.resolvedAfter(request.getResolvedAfter()))
+                .and(IssueSpecification.resolvedBefore(request.getResolvedBefore()));
+
+        Sort sort = buildSort(request.getSortBy(), request.getDirection());
+
+        List<IssueResponse> issues = issueRepository.findAll(spec, sort).stream()
+                .map(IssueResponse::new)
+                .toList();
+
+        return ResponseEntity.ok(issues);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Issue> getIssue(@PathVariable Long id) {
-        return issueRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<IssueResponse> getIssue(@PathVariable Long id) {
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Issue not found: " + id));
+        return ResponseEntity.ok(new IssueResponse(issue));
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity getComments(@PathVariable Long id) {
-        if(!issueRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable Long id) {
+        if (!issueRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Issue not found: " + id);
         }
 
-        List comments = commentRepository.findCommentsByIssue_Id(id);
+        List<CommentResponse> comments = commentRepository.findCommentsByIssue_IdOrderByCreatedAtAsc(id).stream()
+                .map(CommentResponse::new)
+                .toList();
         return ResponseEntity.ok(comments);
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity createComment(@PathVariable Long id, @RequestBody @Valid CreateCommentRequest comment) {
-        if(!issueRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<CommentResponse> createComment(@PathVariable Long id, @RequestBody @Valid CreateCommentRequest request) {
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Issue not found: " + id));
+
         User currentUser = getCurrentUser();
-        Comment c = new Comment();
-        c.setText(comment.getText());
-        c.setAuthor(currentUser);
-        c.setIssue(issueRepository.findById(id).get());
-        commentRepository.save(c);
-        return ResponseEntity.status(HttpStatus.CREATED).body(c);
+        Comment comment = new Comment();
+        comment.setText(request.getText());
+        comment.setAuthor(currentUser);
+        comment.setIssue(issue);
+
+        Comment saved = commentRepository.save(comment);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CommentResponse(saved));
+    }
+
+    private Sort buildSort(String sortBy, String direction) {
+        String field = (sortBy != null && ALLOWED_SORT_FIELDS.contains(sortBy)) ? sortBy : "createdAt";
+        Sort.Direction dir = "asc".equalsIgnoreCase(direction) ? Sort.Direction.ASC : Sort.Direction.DESC;
+        return Sort.by(dir, field);
     }
 
     private User getCurrentUser() {

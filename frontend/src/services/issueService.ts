@@ -23,12 +23,18 @@ export const createIssue = async (issue: CreateIssueRequest) => {
     }
 }
 
-export const getIssues = async (issue: GetIssueRequest) => {
+export const getIssues = async (request: GetIssueRequest) => {
     const token = localStorage.getItem('JWT');
     const params = new URLSearchParams();
-    if(issue.type) params.append("type",issue.type);
-    if(issue.status) params.append("status",issue.status);
-    if(issue.priority) params.append("priority",issue.priority);
+    if (request.type) params.append("type", request.type);
+    if (request.status) params.append("status", request.status);
+    if (request.priority) params.append("priority", request.priority);
+    if (request.assigneeId != null) params.append("assigneeId", String(request.assigneeId));
+    if (request.authorId != null) params.append("authorId", String(request.authorId));
+    if (request.resolvedAfter) params.append("resolvedAfter", request.resolvedAfter);
+    if (request.resolvedBefore) params.append("resolvedBefore", request.resolvedBefore);
+    if (request.sortBy) params.append("sortBy", request.sortBy);
+    if (request.direction) params.append("direction", request.direction);
 
     const queryString = params.toString();
     const requestUrl = queryString ? `${ISSUE_URL}?${queryString}` : ISSUE_URL;
@@ -42,8 +48,8 @@ export const getIssues = async (issue: GetIssueRequest) => {
     });
 
     if (!response.ok) {
-        const errorBody = await response.json().catch(()=>null);
-        throw new Error(errorBody?.message ?? "Issue Get Error")
+        const errorBody = await response.json().catch(() => null);
+        throw new Error(errorBody?.message ?? "Issues Get Error")
     }
     const data: Issue[] = await response.json();
     return data;
@@ -62,7 +68,7 @@ export const getIssueFromId = async (id: number) => {
 
     if (!response.ok) {
         const errorBody = await response.json().catch(()=>null);
-        throw new Error(errorBody?.message ?? "Issue Get Error")
+        throw new Error(errorBody?.message ?? "Issue ID Get Error")
     }
     const data: Issue = await response.json();
     return data;
@@ -83,7 +89,7 @@ export const getIssueComments = async (issueId: number) => {
     if(!response.ok)
     {
         const errorBody = await response.json().catch(()=>null);
-        throw new Error(errorBody?.message ?? "Issue Get Error")
+        throw new Error(errorBody?.message ?? "Issue Comments Get Error")
     }
 
     const data: Comment[] = await response.json();

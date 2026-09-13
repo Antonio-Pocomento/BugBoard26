@@ -1,18 +1,19 @@
 import "./Dashboard.css"
 import { useNavigate } from "react-router-dom";
+import { type User } from "../model/User";
 
 function MyButton({ title, onClick }: { title: string, onClick?: () => void }) {
     return (
-        //<button className="dashboard" onClick={onClick}>{title}</button>
         <button className="dashboard-button" onClick={onClick}>{title}</button>
     );
 }
 
 interface DashboardProps {
+    currentUser: User;
     onLogout: () => void;
 }
 
-export function Dashboard({ onLogout }: DashboardProps) {
+export function Dashboard({ currentUser, onLogout }: DashboardProps) {
     const navigate = useNavigate();
 
     const handleLogoutClick = () => {
@@ -23,10 +24,14 @@ export function Dashboard({ onLogout }: DashboardProps) {
     return (
         <div className="dashboard-page">
             <div className="dashboard-panel">
-                <h1>Schermata Amministratore</h1>
+                <h1>Benvenuto, {currentUser.email}</h1>
                 <div className="dashboard-button-group">
-                    <MyButton title="Registrazione Utenti" onClick={() => navigate('/register')} />
-                    <MyButton title="Segnala Problemi" onClick={() => navigate('/issue')} />
+                    {currentUser.role === 'ADMIN' && (
+                        <MyButton title="Registrazione Utenti" onClick={() => navigate('/register')} />
+                    )}
+                    {currentUser.role !== 'READONLY' && (
+                        <MyButton title="Segnala Problemi" onClick={() => navigate('/issue')} />
+                    )}
                     <MyButton title="Visualizza Problemi" onClick={() => navigate('/issueViewer')} />
                     <MyButton title="Log-out" onClick={handleLogoutClick} />
                 </div>

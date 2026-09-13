@@ -104,7 +104,3 @@ ul, ol {
     background-color: #a0c4ff;
     cursor: not-allowed;
 }
-
-* {
-    cursor: url("/cursor/cursor.png"), auto !important;
-}

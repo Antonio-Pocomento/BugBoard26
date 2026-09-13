@@ -2,6 +2,7 @@ package com.bugboard26.backend.controller;
 
 import com.bugboard26.backend.dto.user.CreateUserRequest;
 import com.bugboard26.backend.dto.user.UserResponse;
+import com.bugboard26.backend.exception.EmailAlreadyInUseException;
 import com.bugboard26.backend.model.User;
 import com.bugboard26.backend.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -22,10 +23,9 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody @Valid CreateUserRequest request) {
-        if(userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Email already in use");
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid CreateUserRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new EmailAlreadyInUseException("Email already in use: " + request.getEmail());
         }
 
         User user = new User();
@@ -34,7 +34,6 @@ public class AdminController {
         user.setRole(request.getRole());
 
         User savedUser = userRepository.save(user);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponse(savedUser));
     }
 }
