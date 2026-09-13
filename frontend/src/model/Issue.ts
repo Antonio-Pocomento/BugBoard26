@@ -27,6 +27,14 @@ export interface CreateIssueRequest {
     assigneeEmail?: string;
 }
 
+export interface ChangeIssueRequest {
+    title?: string;
+    description?: string;
+    status?: IssueStatus;
+    type?: IssueType;
+}
+
+
 export interface GetIssueRequest {
     type?: IssueType;
     status?: IssueStatus;

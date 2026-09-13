@@ -33,6 +33,9 @@ export function Dashboard({ currentUser, onLogout }: DashboardProps) {
                         <MyButton title="Segnala Problemi" onClick={() => navigate('/issue')} />
                     )}
                     <MyButton title="Visualizza Problemi" onClick={() => navigate('/issueViewer')} />
+                    {currentUser.role === 'ADMIN' && (
+                        <MyButton title="Visualizza Report Mensili" onClick={() => navigate('/reportViewer')} />
+                    )}
                     <MyButton title="Log-out" onClick={handleLogoutClick} />
                 </div>
             </div>

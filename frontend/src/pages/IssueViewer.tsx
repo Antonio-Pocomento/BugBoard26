@@ -16,6 +16,8 @@ export function IssueViewer(){
     const [type, setType] = useState<IssueType | undefined>();
     const [status, setStatus] = useState<IssueStatus | undefined>();
     const [priority, setPriority] = useState<IssuePriority | undefined>();
+    const [sortBy, setSortBy] = useState<string>("createdAt");
+    const [direction, setDirection] = useState<string>("asc");
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export function IssueViewer(){
         setError(null);
         try {
             setIsLoading(true);
-            const data = await getIssues({ type, status, priority });
+            const data = await getIssues({ type, status, priority, sortBy, direction});
             setIssues(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Errore durante la visualizzazione delle issues!');
@@ -75,6 +77,18 @@ export function IssueViewer(){
                     <option value="MEDIUM">Medium</option>
                     <option value="HIGH">High</option>
                     <option value="CRITICAL">Critical</option>
+                </select>
+                <select value={sortBy ?? "createdAt"} onChange={(e) => setSortBy(e.target.value)}>
+                    <option value="createdAt">createdAt</option>
+                    <option value="updatedAt">updatedAt</option>
+                    <option value="resolvedAt">resolvedAt</option>
+                    <option value="priority">priority</option>
+                    <option value="status">status</option>
+                    <option value="title">title</option>
+                </select>
+                <select value={direction ?? "asc"} onChange={(e) => setDirection(e.target.value)}>
+                    <option value="asc">asc</option>
+                    <option value="desc">desc</option>
                 </select>
                 <MyButton title={isLoading ? "Caricamento..." : "Filtra Issue"} onClick={handleIssueViewer} disabled={isLoading} />
             </div>

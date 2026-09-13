@@ -8,6 +8,7 @@ import { IssueForm } from "./pages/IssueForm.tsx";
 import "./App.css";
 import {IssueViewer} from "./pages/IssueViewer.tsx";
 import {IssueDetail} from "./pages/IssueDetail.tsx";
+import {ReportForm} from "./pages/ReportForm.tsx";
 
 function App() {
 
@@ -55,6 +56,7 @@ function App() {
                 {currentUser.role !== 'READONLY' && <Route path="/issue" element={<IssueForm />} />}
                 <Route path="/issueViewer" element={<IssueViewer />} />
                 <Route path="/issueViewer/:id" element={<IssueDetail />} />
+                {currentUser.role === 'ADMIN' && <Route path="/reportViewer" element={<ReportForm />} />}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         );

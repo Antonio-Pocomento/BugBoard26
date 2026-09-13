@@ -1,5 +1,5 @@
 import {APP_CONFIG} from "../config/config.ts";
-import {type CreateIssueRequest, type GetIssueRequest, type Issue} from "../model/Issue.ts";
+import {type ChangeIssueRequest, type CreateIssueRequest, type GetIssueRequest, type Issue} from "../model/Issue.ts";
 import type {Comment, CreateCommentRequest} from "../model/Comment.ts";
 
 const API_URL = APP_CONFIG.BASE_URL;
@@ -64,6 +64,26 @@ export const getIssueFromId = async (id: number) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.json().catch(()=>null);
+        throw new Error(errorBody?.message ?? "Issue ID Get Error")
+    }
+    const data: Issue = await response.json();
+    return data;
+}
+
+export const changeIssueFromId = async (id: number, request: ChangeIssueRequest) => {
+    const token = localStorage.getItem('JWT');
+
+    const response = await fetch(`${ISSUE_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(request)
     });
 
     if (!response.ok) {

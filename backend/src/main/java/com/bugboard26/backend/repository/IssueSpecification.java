@@ -47,4 +47,14 @@ public class IssueSpecification {
         return (root, query, cb) ->
                 instant == null ? null : cb.lessThanOrEqualTo(root.get("resolvedAt"), instant);
     }
+
+    public static Specification<Issue> createdBetween(Instant from, Instant to) {
+        return (root, query, cb) ->
+                (from == null || to == null) ? null : cb.between(root.get("createdAt"), from, to);
+    }
+
+    public static Specification<Issue> resolvedBetween(Instant from, Instant to) {
+        return (root, query, cb) ->
+                (from == null || to == null) ? null : cb.between(root.get("resolvedAt"), from, to);
+    }
 }

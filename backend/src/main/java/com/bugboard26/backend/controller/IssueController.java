@@ -91,6 +91,20 @@ public class IssueController {
         return ResponseEntity.ok(comments);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<IssueResponse> changeIssue(@PathVariable Long id, @RequestBody @Valid ChangeIssueRequest request) {
+        Issue issue = issueRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Issue not found: " + id));
+
+        issue.setTitle((request.getTitle() != null && !request.getTitle().isBlank()) ? request.getTitle() : issue.getTitle());
+        issue.setDescription((request.getDescription() != null && !request.getDescription().isBlank()) ? request.getDescription() : issue.getDescription());
+        issue.setStatus(request.getStatus() != null ? request.getStatus() : issue.getStatus());
+        issue.setType(request.getType() != null ? request.getType() : issue.getType());
+
+        Issue saved = issueRepository.save(issue);
+        return ResponseEntity.status(HttpStatus.OK).body(new IssueResponse(saved));
+    }
+
     @PostMapping("/{id}/comments")
     public ResponseEntity<CommentResponse> createComment(@PathVariable Long id, @RequestBody @Valid CreateCommentRequest request) {
         Issue issue = issueRepository.findById(id)

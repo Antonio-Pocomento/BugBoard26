@@ -1,10 +1,10 @@
 import { useParams } from "react-router-dom";
-import { createComment, getIssueComments, getIssueFromId } from "../services/issueService.ts";
-import type { Issue as IssueModel } from "../model/Issue.ts";
+import {changeIssueFromId, createComment, getIssueComments, getIssueFromId} from "../services/issueService.ts";
+import type {ChangeIssueRequest, Issue as IssueModel, IssuePriority, IssueStatus, IssueType} from "../model/Issue.ts";
 import type { Comment } from "../model/Comment.ts";
 import type { User } from "../model/User.ts";
-import { useEffect, useState } from "react";
-import "./IssueDetail.css"
+import React, { useEffect, useState } from "react";
+import "./IssueDetail.css";
 
 export function IssueDetail() {
     const { id } = useParams<{ id: string }>();
@@ -12,6 +12,12 @@ export function IssueDetail() {
     const [comments, setComments] = useState<Comment[]>([]);
     const [issue, setIssue] = useState<IssueModel | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [title, setTitle] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
+    const [status, setStatus] = useState<IssueStatus>();
+    const [type, setType] = useState<IssueType>();
+
+
 
     const storedUser = localStorage.getItem('user');
     const currentUser: User | null = storedUser ? JSON.parse(storedUser) : null;
@@ -21,6 +27,10 @@ export function IssueDetail() {
         try {
             const data = await getIssueFromId(Number(id));
             setIssue(data);
+            setTitle(data.title);
+            setDescription(data.description);
+            setStatus(data.status);
+            setType(data.type);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Errore nel caricamento della issue');
         }
@@ -54,6 +64,8 @@ export function IssueDetail() {
         }
     }
 
+    // @ts-ignore
+    // @ts-ignore
     return (
         <div className={"issueId-page"}>
             {error && <div className="issue-error">{error}</div>}
@@ -80,6 +92,37 @@ export function IssueDetail() {
                     <button type="submit" className="HandleComment">Pubblica Commento</button>
                 </form>
             )}
+
+            {(currentUser?.role === 'ADMIN' || currentUser?.id === issue?.assignee?.id) && (
+                <div>
+                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}/>
+                    <input type="text" value={description} onChange={(e) => setDescription(e.target.value)}/>
+                    <select value={type} onChange={(e) => setType(e.target.value as IssueType)}>
+                        <option value="QUESTION">Question</option>
+                        <option value="BUG">Bug</option>
+                        <option value="DOCUMENTATION">Documentation</option>
+                        <option value="FEATURE">Feature</option>
+                    </select>
+                    <select value={status} onChange={(e) => setStatus(e.target.value as IssueStatus)}>
+                        <option value="TODO">Todo</option>
+                        <option value="IN_PROGRESS">In_Progress</option>
+                        <option value="ON_HOLD">On_Hold</option>
+                        <option value="RESOLVED">Resolved</option>
+                    </select>
+                    <button title={"Modifica Issue"} onClick={changeIssue}>Cliccami</button>
+                </div>
+            )}
         </div>
     )
+
+    async function changeIssue(e: React.MouseEvent) {
+        e.preventDefault();
+        setError(null);
+        try {
+            const updated = await changeIssueFromId(Number(id), { title, description, status, type });
+            setIssue(updated);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Errore nella modifica della issue");
+        }
+    }
 }
