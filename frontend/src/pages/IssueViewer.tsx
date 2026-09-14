@@ -26,6 +26,7 @@ export function IssueViewer(){
         setError(null);
         try {
             setIsLoading(true);
+            // @ts-ignore
             const data = await getIssues({ type, status, priority, sortBy, direction});
             setIssues(data);
         } catch (err) {
@@ -40,57 +41,61 @@ export function IssueViewer(){
     }, []);
 
     return(
-        <div>
-            {error && <div className="issue-error">{error}</div>}
+        <div className="issueViewer-page">
+            <div className={"issue-list-wrapper"}>
+                {error && <div className="issue-error">{error}</div>}
 
-            <div className={"issue-list"}>
-                {issues.map((issue)=>(
-                    <div key={issue.id} className="issue-card" onClick={()=>navigate(`/issueViewer/${issue.id}`)}>
-                        <h3>{issue.title}</h3>
-                        <p>{issue.description}</p>
-                        <p><strong>Type:</strong> {issue.type}</p>
-                        <p><strong>Status:</strong> {issue.status}</p>
-                        <p><strong>Priority:</strong> {issue.priority}</p>
-                    </div>
-                ))}
-            </div>
+                <div className={"issue-list"}>
+                    {issues.map((issue)=>(
+                        <div key={issue.id} className="issue-card" onClick={()=>navigate(`/issueViewer/${issue.id}`)}>
+                            <h3>{issue.title}</h3>
+                            <p>{issue.description}</p>
+                            <div className="issue-card-badges">
+                                <span className={`badge badge-type-${issue.type.toLowerCase()}`}>{issue.type}</span>
+                                <span className={`badge badge-status-${issue.status.toLowerCase()}`}>{issue.status}</span>
+                                <span className={`badge badge-priority-${issue.priority.toLowerCase()}`}>{issue.priority}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-            <div className="filters">
-                <select value={type ?? ""} onChange={(e) => setType(e.target.value === "" ? undefined : e.target.value as IssueType)}>
-                    <option value="">Tutti i tipi</option>
-                    <option value="QUESTION">Question</option>
-                    <option value="BUG">Bug</option>
-                    <option value="DOCUMENTATION">Documentation</option>
-                    <option value="FEATURE">Feature</option>
-                </select>
-                <select value={status ?? ""} onChange={(e) => setStatus(e.target.value === "" ? undefined : e.target.value as IssueStatus)}>
-                    <option value="">Tutti gli stati</option>
-                    <option value="TODO">Todo</option>
-                    <option value="IN_PROGRESS">In Progress</option>
-                    <option value="ON_HOLD">On Hold</option>
-                    <option value="RESOLVED">Resolved</option>
-                </select>
-                <select value={priority ?? ""} onChange={(e) => setPriority(e.target.value === "" ? undefined : e.target.value as IssuePriority)}>
-                    <option value="">Tutte le priorità</option>
-                    <option value="UNKNOWN">Unknown</option>
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
-                    <option value="CRITICAL">Critical</option>
-                </select>
-                <select value={sortBy ?? "createdAt"} onChange={(e) => setSortBy(e.target.value)}>
-                    <option value="createdAt">createdAt</option>
-                    <option value="updatedAt">updatedAt</option>
-                    <option value="resolvedAt">resolvedAt</option>
-                    <option value="priority">priority</option>
-                    <option value="status">status</option>
-                    <option value="title">title</option>
-                </select>
-                <select value={direction ?? "asc"} onChange={(e) => setDirection(e.target.value)}>
-                    <option value="asc">asc</option>
-                    <option value="desc">desc</option>
-                </select>
-                <MyButton title={isLoading ? "Caricamento..." : "Filtra Issue"} onClick={handleIssueViewer} disabled={isLoading} />
+                <div className="filters">
+                    <select value={type ?? ""} onChange={(e) => setType(e.target.value === "" ? undefined : e.target.value as IssueType)}>
+                        <option value="">Tutti i tipi</option>
+                        <option value="QUESTION">Question</option>
+                        <option value="BUG">Bug</option>
+                        <option value="DOCUMENTATION">Documentation</option>
+                        <option value="FEATURE">Feature</option>
+                    </select>
+                    <select value={status ?? ""} onChange={(e) => setStatus(e.target.value === "" ? undefined : e.target.value as IssueStatus)}>
+                        <option value="">Tutti gli stati</option>
+                        <option value="TODO">Todo</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="ON_HOLD">On Hold</option>
+                        <option value="RESOLVED">Resolved</option>
+                    </select>
+                    <select value={priority ?? ""} onChange={(e) => setPriority(e.target.value === "" ? undefined : e.target.value as IssuePriority)}>
+                        <option value="">Tutte le priorità</option>
+                        <option value="UNKNOWN">Unknown</option>
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HIGH">High</option>
+                        <option value="CRITICAL">Critical</option>
+                    </select>
+                    <select value={sortBy ?? "createdAt"} onChange={(e) => setSortBy(e.target.value)}>
+                        <option value="createdAt">createdAt</option>
+                        <option value="updatedAt">updatedAt</option>
+                        <option value="resolvedAt">resolvedAt</option>
+                        <option value="priority">priority</option>
+                        <option value="status">status</option>
+                        <option value="title">title</option>
+                    </select>
+                    <select value={direction ?? "asc"} onChange={(e) => setDirection(e.target.value)}>
+                        <option value="asc">asc</option>
+                        <option value="desc">desc</option>
+                    </select>
+                    <MyButton title={isLoading ? "Caricamento..." : "Filtra Issue"} onClick={handleIssueViewer} disabled={isLoading} />
+                </div>
             </div>
         </div>
     )

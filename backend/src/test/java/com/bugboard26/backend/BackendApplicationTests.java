@@ -8,6 +8,9 @@ class BackendApplicationTests {
 
     @Test
     void contextLoads() {
+        // Intenzionalmente vuoto: verifichiamo solo che la
+        // Spring application si avvii correttamente. Se fallisce,
+        // Spring Boot lancerà un eccezione
     }
 
 }

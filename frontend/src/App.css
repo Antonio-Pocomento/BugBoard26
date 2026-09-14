@@ -1,106 +1,121 @@
-/* ---- CSS Reset ---- */
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html, body {
-    height: 100%;
-}
-
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.5;
-}
-
-img, picture, video, canvas, svg {
-    display: block;
-    max-width: 100%;
-}
-
-input, button, textarea, select {
-    font: inherit;
-    color: inherit;
-}
-
-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-ul, ol {
-    list-style: none;
-}
-/* ---- End reset ---- */
+@import "./theme.css";
 
 .login-page {
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
-    font-family: sans-serif;
+    justify-content: center;
+    padding: var(--bb-space-5);
+    background:
+            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            var(--bb-bg);
 }
 
 .login-card {
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px;
+    max-width: 380px;
+    background: var(--bb-surface);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-md);
+    box-shadow: var(--bb-shadow-2);
+    padding: clamp(var(--bb-space-5), 5vw, var(--bb-space-6)) var(--bb-space-5) var(--bb-space-5);
 }
 
 .login-card h2 {
-    text-align: center;
-    margin-bottom: 20px;
+    margin: 0 0 var(--bb-space-5);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--bb-text);
+    letter-spacing: -0.01em;
+}
+
+.login-card h2::before {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: var(--bb-accent);
+    margin-bottom: var(--bb-space-3);
+    border-radius: 2px;
 }
 
 .login-error {
-    color: red;
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #ffe6e6;
-    border-radius: 4px;
+    background: var(--bb-danger-bg);
+    border: 1px solid var(--bb-danger-border);
+    color: #f0aab3;
+    padding: var(--bb-space-3) var(--bb-space-4);
+    border-radius: var(--bb-radius-sm);
+    font-size: 0.8rem;
+    margin-bottom: var(--bb-space-4);
+    line-height: 1.4;
 }
 
 .login-field-group {
-    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--bb-space-2);
+}
+
+/* Sostituiti i margin top sparsi sfruttando il gap del contenitore */
+.login-field-group > .login-label:not(:first-child) {
+    margin-top: var(--bb-space-3);
 }
 
 .login-label {
-    display: block;
-    margin-bottom: 5px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bb-text-secondary);
 }
 
 .login-input {
     width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+    font: 0.9rem var(--bb-font-ui);
+    color: var(--bb-text);
+    background: var(--bb-bg-inset);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-sm);
+    padding: 10px var(--bb-space-3);
+    transition: border-color 0.15s ease;
+}
+
+.login-input::placeholder {
+    color: var(--bb-text-muted);
+}
+
+.login-input:hover {
+    border-color: var(--bb-border-strong);
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: var(--bb-accent);
+    box-shadow: 0 0 0 3px var(--bb-accent-bg);
 }
 
 .login-button {
-    width: 100%;
-    padding: 12px;
-    background-color: #0056b3;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    font: 600 0.9rem var(--bb-font-ui);
+    color: #06201c;
+    background: var(--bb-accent);
+    border: 1px solid var(--bb-accent);
+    border-radius: var(--bb-radius-sm);
+    padding: 10px var(--bb-space-4);
+    margin-top: var(--bb-space-5);
     cursor: pointer;
-    font-size: 16px;
-    margin-top: 12px;
+    transition: all 0.15s ease;
+}
+
+.login-button:not(:disabled):hover {
+    background: var(--bb-accent-strong);
+}
+
+.login-button:not(:disabled):active {
+    transform: translateY(1px);
 }
 
 .login-button:disabled {
-    background-color: #a0c4ff;
+    background: var(--bb-surface-hover);
+    border-color: var(--bb-border);
+    color: var(--bb-text-muted);
     cursor: not-allowed;
 }

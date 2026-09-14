@@ -1,0 +1,95 @@
+:root {
+    /* --- Superfici --- */
+    --bb-bg: #0f1115;
+    --bb-bg-raised: #161922;
+    --bb-bg-inset: #0b0d11;
+    --bb-surface: #1a1e28;
+    --bb-surface-hover: #212633;
+    --bb-border: #2a3040;
+    --bb-border-strong: #3a4257;
+
+    /* --- Testo --- */
+    --bb-text: #e4e7ee;
+    --bb-text-secondary: #9aa3b8;
+    --bb-text-muted: #656e83;
+
+    /* --- Accento primario --- */
+    --bb-accent: #4fb8a8;
+    --bb-accent-strong: #6fcabc;
+    --bb-accent-bg: rgba(79, 184, 168, 0.12);
+    --bb-accent-border: rgba(79, 184, 168, 0.35);
+
+    /* --- Stati --- */
+    --bb-status-todo: #8b93a7;
+    --bb-status-progress: #5b9fd6;
+    --bb-status-hold: #d6a15b;
+    --bb-status-resolved: #4fb8a8;
+
+    --bb-priority-unknown: #656e83;
+    --bb-priority-low: #5b9fd6;
+    --bb-priority-medium: #d6c25b;
+    --bb-priority-high: #d68a5b;
+    --bb-priority-critical: #d65b6b;
+
+    --bb-danger: #d65b6b;
+    --bb-danger-bg: rgba(214, 91, 107, 0.12);
+    --bb-danger-border: rgba(214, 91, 107, 0.35);
+    --bb-success: #4fb8a8;
+    --bb-success-bg: rgba(79, 184, 168, 0.12);
+
+    /* --- Font --- */
+    --bb-font-ui: -apple-system, "Segoe UI", "Inter", Roboto, Helvetica, Arial, sans-serif;
+    --bb-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, "Liberation Mono", monospace;
+
+    /* --- Scala spaziale --- */
+    --bb-space-1: 4px;
+    --bb-space-2: 8px;
+    --bb-space-3: 12px;
+    --bb-space-4: 16px;
+    --bb-space-5: 24px;
+    --bb-space-6: 32px;
+    --bb-space-7: 48px;
+    --bb-space-8: 64px;
+
+    /* --- Raggio & ombre --- */
+    --bb-radius-sm: 4px;
+    --bb-radius-md: 6px;
+    --bb-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --bb-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.45);
+
+    /* --- Layout --- */
+    --bb-content-max: 1120px;
+    --bb-content-narrow: 720px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    color-scheme: dark;
+}
+
+body {
+    background: var(--bb-bg);
+    color: var(--bb-text);
+    font-family: var(--bb-font-ui);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Focus visibile per accessibilità da tastiera  */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--bb-accent);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+    }
+}

@@ -1,92 +1,226 @@
-.HandleIssueButton {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
+@import "../theme.css";
+@import "../badges.css";
+
+.issueId-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    background:
+            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            var(--bb-bg);
+    padding: var(--bb-space-6) var(--bb-space-4) var(--bb-space-7);
+}
+
+.issueId-content {
     width: 100%;
-    max-width: 420px;
-    height: 60px;
-    text-align: center;
-    font-family: "Cascadia Code", sans-serif;
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #333;
+    max-width: var(--bb-content-narrow);
+    background: var(--bb-bg-raised);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-md);
+    box-shadow: var(--bb-shadow-2);
+    padding: var(--bb-space-6);
+}
+
+.issueId-header {
+    padding-bottom: var(--bb-space-4);
+    border-bottom: 1px solid var(--bb-border);
+    margin-bottom: var(--bb-space-4);
+}
+
+.issueId-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--bb-text);
+    margin-bottom: var(--bb-space-3);
+}
+
+.issueId-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--bb-space-2);
+}
+
+.issueId-description {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--bb-text-secondary);
+    max-width: 65ch;
+    margin-bottom: var(--bb-space-5);
+}
+
+.issueId-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--bb-space-4);
+    background: var(--bb-surface);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-md);
+    padding: var(--bb-space-4) var(--bb-space-5);
+    margin-bottom: var(--bb-space-6);
+}
+
+.issueId-meta-row dt {
+    font-size: 0.7rem;
+    color: var(--bb-text-muted);
+    margin-bottom: 2px;
+}
+
+.issueId-meta-row dd {
+    font-size: 0.9rem;
+    color: var(--bb-text);
+    margin: 0;
+}
+
+.issueId-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--bb-text);
+    margin-bottom: var(--bb-space-3);
+}
+
+.issueId-empty {
+    font-size: 0.9rem;
+    color: var(--bb-text-muted);
+}
+
+/* --- Commenti --- */
+
+.issueId-comments {
+    margin-bottom: var(--bb-space-5);
+}
+
+.comment-card {
+    background: var(--bb-surface);
+    border: 1px solid var(--bb-border);
+    border-left: 2px solid var(--bb-border-strong);
+    border-radius: var(--bb-radius-sm);
+    padding: var(--bb-space-3) var(--bb-space-4);
+    margin-bottom: var(--bb-space-2);
+}
+
+.comment-author {
+    display: block;
+    font: 0.75rem var(--bb-font-mono);
+    color: var(--bb-accent);
+    margin-bottom: 4px;
+}
+
+.comment-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--bb-text);
+    margin: 0;
+}
+
+.comment-form {
+    display: flex;
+    gap: var(--bb-space-2);
+    margin-bottom: var(--bb-space-7);
+}
+
+.CommentText {
+    flex: 1;
+    font: 0.9rem var(--bb-font-ui);
+    color: var(--bb-text);
+    background: var(--bb-bg-inset);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-sm);
+    padding: 9px var(--bb-space-3);
+    transition: all 0.15s ease;
+}
+
+.CommentText::placeholder {
+    color: var(--bb-text-muted);
+}
+
+.CommentText:focus {
+    outline: none;
+    border-color: var(--bb-accent);
+    box-shadow: 0 0 0 3px var(--bb-accent-bg);
+}
+
+.HandleComment {
+    font: 500 0.9rem var(--bb-font-ui);
+    color: var(--bb-text);
+    background: var(--bb-surface);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-sm);
+    padding: 9px var(--bb-space-4);
     cursor: pointer;
-
-    border: 3px solid #17c4e6;
-    border-radius: 999px;
-    background: linear-gradient(to bottom, #ffffff 0%, #eef3f7 45%, #c7d6e0 100%);
-    box-shadow:
-            0 4px 8px rgba(0, 0, 0, 0.25),
-            inset 0 1px 1px rgba(255, 255, 255, 0.9);
-
-    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+    transition: all 0.15s ease;
 }
 
-.HandleIssueButton::before {
-    content: "";
-    position: absolute;
-    top: 4px;
-    left: 6%;
-    width: 88%;
-    height: 42%;
-    border-radius: 999px / 100%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
-    pointer-events: none;
+.HandleComment:hover {
+    border-color: var(--bb-accent);
+    color: var(--bb-accent-strong);
 }
 
-.HandleIssueButton:hover {
-    filter: brightness(1.04);
+/* --- Modifica issue --- */
+
+.issueId-edit {
+    border-top: 1px solid var(--bb-border);
+    padding-top: var(--bb-space-5);
 }
 
-.HandleIssueButton:active {
-    transform: translateY(2px);
-    box-shadow:
-            0 1px 3px rgba(0, 0, 0, 0.25),
-            inset 0 1px 1px rgba(255, 255, 255, 0.7);
+.issueId-edit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--bb-space-3);
+    margin-bottom: var(--bb-space-4);
 }
 
-.HandleIssueButton:disabled {
-    filter: grayscale(0.5) brightness(0.9);
-    cursor: not-allowed;
+/* Raggruppamento globale degli stili input/select/textarea tramite :is() */
+.issueId-edit-grid :is(input, select, textarea) {
+    width: 100%;
+    font: 0.9rem var(--bb-font-ui);
+    color: var(--bb-text);
+    background: var(--bb-bg-inset);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-sm);
+    padding: 9px var(--bb-space-3);
+    transition: all 0.15s ease;
 }
 
-.title-label{
-    color: red;
-    text-align: left;
-    font-family: "Comic Sans MS";
-    font-size: 40px;
+.issueId-edit-grid :is(input, select, textarea):focus {
+    outline: none;
+    border-color: var(--bb-accent);
+    box-shadow: 0 0 0 3px var(--bb-accent-bg);
 }
 
-.description-label{
-    color: red;
-    text-align: left;
-    font-family: "Comic Sans MS";
-    font-size: 20px;
+.issueId-edit-grid input[type="text"]:first-child,
+.issueId-edit-grid textarea {
+    grid-column: 1 / -1;
 }
 
-.type-label{
-    color: red;
-    text-align: left;
-    font-family: "Comic Sans MS";
-    font-size: 20px;
+.issueId-edit-grid textarea {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 1.5;
 }
 
-.priority-label{
-    color: red;
-    text-align: left;
-    font-family: "Comic Sans MS";
-    font-size: 20px;
+.issueId-edit-grid select {
+    cursor: pointer;
+    appearance: none;
+    background:
+            linear-gradient(45deg, transparent 50%, var(--bb-text-secondary) 50%) calc(100% - 16px) center / 5px 5px no-repeat,
+            linear-gradient(135deg, var(--bb-text-secondary) 50%, transparent 50%) calc(100% - 11px) center / 5px 5px no-repeat,
+            var(--bb-bg-inset);
 }
 
-.status-label{
-    color: red;
-    text-align: left;
-    font-family: "Comic Sans MS";
-    font-size: 20px;
+.save-issue-button {
+    font: 600 0.9rem var(--bb-font-ui);
+    color: #06201c;
+    background: var(--bb-accent);
+    border: 1px solid var(--bb-accent);
+    border-radius: var(--bb-radius-sm);
+    padding: 9px var(--bb-space-5);
+    cursor: pointer;
+    transition: background 0.15s ease;
 }
-.creation-label{
-    color: red;
-    text-align: left;
-    font-family: "Comic Sans MS";
-    font-size: 20px;
+
+.save-issue-button:hover {
+    background: var(--bb-accent-strong);
 }

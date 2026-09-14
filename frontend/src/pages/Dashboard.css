@@ -1,110 +1,87 @@
-/* h1 {
-    color: black;
-    font-weight: bold;
-    font-family: "Cascadia Code" ;
-}
-
-button.dashboard {
-    width: 500px;
-    text-align: center;
-    height: 60px;
-    border: 2px solid black;
-    border-radius: 20px;
-    font: bold;
-}
-*/
+@import "../theme.css";
 
 .dashboard-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #3f7b9c;
+    padding: var(--bb-space-6) var(--bb-space-4);
+    background:
+            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            var(--bb-bg);
 }
 
 .dashboard-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2.5rem;
     width: 100%;
     max-width: 560px;
-    padding: 3rem 2.5rem;
-
-    background: linear-gradient(165deg, #ffffff 0%, #f3f7fa 100%);
-    border-radius: 32px;
-    box-shadow:
-            0 1px 2px rgba(10, 35, 55, 0.18),
-            0 8px 16px rgba(10, 35, 55, 0.16),
-            0 24px 48px rgba(10, 35, 55, 0.20),
-            0 0 60px rgba(23, 196, 230, 0.12),
-            inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    background: var(--bb-surface);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-md);
+    box-shadow: var(--bb-shadow-2);
+    padding: var(--bb-space-6) var(--bb-space-5) var(--bb-space-5);
 }
 
 .dashboard-panel h1 {
-    color: black;
-    font-weight: bold;
-    font-family: "Cascadia Code", sans-serif;
-    margin: 0;
-    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--bb-text);
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--bb-space-5);
+}
+
+.dashboard-panel h1::before {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: var(--bb-accent);
+    margin-bottom: var(--bb-space-3);
+    border-radius: 2px;
 }
 
 .dashboard-button-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--bb-space-3);
 }
 
 .dashboard-button {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
-    width: 100%;
-    max-width: 420px;
-    height: 60px;
-    text-align: center;
-    font-family: "Cascadia Code", sans-serif;
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #333;
+    font: 500 0.9rem var(--bb-font-ui);
+    color: var(--bb-text);
+    background: var(--bb-bg-inset);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-md);
+    padding: var(--bb-space-4);
+    text-align: left;
     cursor: pointer;
-
-    border: 3px solid #17c4e6;
-    border-radius: 999px;
-    background: linear-gradient(to bottom, #ffffff 0%, #eef3f7 45%, #c7d6e0 100%);
-    box-shadow:
-            0 4px 8px rgba(0, 0, 0, 0.25),
-            inset 0 1px 1px rgba(255, 255, 255, 0.9);
-
-    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+    transition: all 0.15s ease;
 }
 
-.dashboard-button::before {
-    content: "";
-    position: absolute;
-    top: 4px;
-    left: 6%;
-    width: 88%;
-    height: 42%;
-    border-radius: 999px / 100%;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
-    pointer-events: none;
+.dashboard-button:not(:disabled):hover {
+    background: var(--bb-surface-hover);
+    border-color: var(--bb-border-strong);
 }
 
-.dashboard-button:hover {
-    filter: brightness(1.04);
-}
-
-.dashboard-button:active {
-    transform: translateY(2px);
-    box-shadow:
-            0 1px 3px rgba(0, 0, 0, 0.25),
-            inset 0 1px 1px rgba(255, 255, 255, 0.7);
+.dashboard-button:not(:disabled):active {
+    background: var(--bb-bg-inset);
 }
 
 .dashboard-button:disabled {
-    filter: grayscale(0.5) brightness(0.9);
+    color: var(--bb-text-muted);
     cursor: not-allowed;
+}
+
+/* Pulsante di Log-out */
+.dashboard-button:last-child {
+    grid-column: 1 / -1;
+    background: var(--bb-danger-bg);
+    border-color: var(--bb-danger-border);
+    color: var(--bb-danger);
+    margin-top: var(--bb-space-2);
+}
+
+.dashboard-button:last-child:not(:disabled):hover {
+    background: var(--bb-danger-border);
+    border-color: var(--bb-danger);
 }

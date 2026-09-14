@@ -70,71 +70,95 @@ export function IssueDetail() {
 
     return (
         <div className={"issueId-page"}>
-            {error && <div className="issue-error">{error}</div>}
+            <div className="issueId-content">
+                {error && <div className="issue-error">{error}</div>}
 
-            <h1><span className={"title-label"}>Titolo: </span><span>{issue?.title}</span></h1>
-            <h2><span className={"description-label"}>Descrizione: </span><span>{issue?.description}</span></h2>
-            <h2><span className={"type-label"}>Tipo: </span><span>{issue?.type}</span></h2>
-            <h2><span className={"priority-label"}>Priorità: </span><span>{issue?.priority}</span></h2>
-            <h2><span className={"status-label"}>Status: </span><span>{issue?.status}</span></h2>
-            <h2><span className={"assignee-label"}>Assegnatario: </span><span>{issue?.assignee?.email ?? "Nessuno"}</span></h2>
-            {issue?.status === 'RESOLVED' && (
-                <h2><span className={"resolved-by-label"}>Risolto da: </span><span>{issue?.resolvedBy?.email ?? "—"}</span></h2>
-            )}
-            <h2><span className={"creation-label"}>Data di creazione: </span><span>{issue?.createdAt}</span></h2>
-
-            <div>
-                {comments.map((comment) => (
-                    <div key={comment.id}>
-                        <h2>Autore: {comment.author.email}</h2>
-                        <h2>{comment.text}</h2>
+                <header className="issueId-header">
+                    <h1 className="issueId-title">{issue?.title}</h1>
+                    <div className="issueId-badges">
+                        <span className={`badge badge-type-${issue?.type?.toLowerCase()}`}>{issue?.type}</span>
+                        <span className={`badge badge-status-${issue?.status?.toLowerCase()}`}>{issue?.status}</span>
+                        <span className={`badge badge-priority-${issue?.priority?.toLowerCase()}`}>{issue?.priority}</span>
                     </div>
-                ))}
-            </div>
+                </header>
 
-            {currentUser?.role !== 'READONLY' && (
-                <form onSubmit={createFrontendComment}>
-                    <input type="text" value={text} onChange={(e) => setText(e.target.value)} className={"CommentText"} />
-                    <button type="submit" className="HandleComment">Pubblica Commento</button>
-                </form>
-            )}
+                <p className="issueId-description">{issue?.description}</p>
 
-            {(currentUser?.role === 'ADMIN' || currentUser?.id === issue?.assignee?.id) && (
-                <div>
-                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}/>
-                    <input type="text" value={description} onChange={(e) => setDescription(e.target.value)}/>
-                    <select value={type} onChange={(e) => setType(e.target.value as IssueType)}>
-                        <option value="QUESTION">Question</option>
-                        <option value="BUG">Bug</option>
-                        <option value="DOCUMENTATION">Documentation</option>
-                        <option value="FEATURE">Feature</option>
-                    </select>
-                    <select value={status} onChange={(e) => setStatus(e.target.value as IssueStatus)}>
-                        <option value="TODO">Todo</option>
-                        <option value="IN_PROGRESS">In_Progress</option>
-                        <option value="ON_HOLD">On_Hold</option>
-                        <option value="RESOLVED">Resolved</option>
-                    </select>
-                    <select value={priority} onChange={(e) => setPriority(e.target.value as IssuePriority)}>
-                        <option value="UNKNOWN">Unknown</option>
-                        <option value="LOW">Low</option>
-                        <option value="MEDIUM">Medium</option>
-                        <option value="HIGH">High</option>
-                        <option value="CRITICAL">Critical</option>
-                    </select>
-
-                    {currentUser?.role === 'ADMIN' && (
-                        <input
-                            type="email"
-                            placeholder="Email nuovo assegnatario (vuoto = rimuovi)"
-                            value={assigneeEmail}
-                            onChange={(e) => setAssigneeEmail(e.target.value)}
-                        />
+                <dl className="issueId-meta">
+                    <div className="issueId-meta-row">
+                        <dt>Assegnatario</dt>
+                        <dd>{issue?.assignee?.email ?? "Nessuno"}</dd>
+                    </div>
+                    {issue?.status === 'RESOLVED' && (
+                        <div className="issueId-meta-row">
+                            <dt>Risolto da</dt>
+                            <dd>{issue?.resolvedBy?.email ?? "—"}</dd>
+                        </div>
                     )}
+                    <div className="issueId-meta-row">
+                        <dt>Creata il</dt>
+                        <dd>{issue?.createdAt}</dd>
+                    </div>
+                </dl>
 
-                    <button title={"Modifica Issue"} onClick={changeIssue}>Cliccami</button>
-                </div>
-            )}
+                <section className="issueId-comments">
+                    <h2 className="issueId-section-title">Commenti</h2>
+                    {comments.length === 0 && <p className="issueId-empty">Nessun commento ancora.</p>}
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="comment-card">
+                            <span className="comment-author">{comment.author.email}</span>
+                            <p className="comment-text">{comment.text}</p>
+                        </div>
+                    ))}
+                </section>
+
+                {currentUser?.role !== 'READONLY' && (
+                    <form onSubmit={createFrontendComment} className="comment-form">
+                        <input type="text" value={text} onChange={(e) => setText(e.target.value)} className={"CommentText"} placeholder="Scrivi un commento..." />
+                        <button type="submit" className="HandleComment">Pubblica</button>
+                    </form>
+                )}
+
+                {(currentUser?.role === 'ADMIN' || currentUser?.id === issue?.assignee?.id) && (
+                    <section className="issueId-edit">
+                        <h2 className="issueId-section-title">Modifica issue</h2>
+                        <div className="issueId-edit-grid">
+                            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titolo" />
+                            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrizione" />
+                            <select value={type} onChange={(e) => setType(e.target.value as IssueType)}>
+                                <option value="QUESTION">Question</option>
+                                <option value="BUG">Bug</option>
+                                <option value="DOCUMENTATION">Documentation</option>
+                                <option value="FEATURE">Feature</option>
+                            </select>
+                            <select value={status} onChange={(e) => setStatus(e.target.value as IssueStatus)}>
+                                <option value="TODO">Todo</option>
+                                <option value="IN_PROGRESS">In_Progress</option>
+                                <option value="ON_HOLD">On_Hold</option>
+                                <option value="RESOLVED">Resolved</option>
+                            </select>
+                            <select value={priority} onChange={(e) => setPriority(e.target.value as IssuePriority)}>
+                                <option value="UNKNOWN">Unknown</option>
+                                <option value="LOW">Low</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HIGH">High</option>
+                                <option value="CRITICAL">Critical</option>
+                            </select>
+
+                            {currentUser?.role === 'ADMIN' && (
+                                <input
+                                    type="email"
+                                    placeholder="Email nuovo assegnatario (vuoto = rimuovi)"
+                                    value={assigneeEmail}
+                                    onChange={(e) => setAssigneeEmail(e.target.value)}
+                                />
+                            )}
+                        </div>
+
+                        <button title={"Modifica Issue"} onClick={changeIssue} className="save-issue-button">Salva modifiche</button>
+                    </section>
+                )}
+            </div>
         </div>
     )
 

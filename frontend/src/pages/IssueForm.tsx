@@ -41,7 +41,7 @@ export function IssueForm(){
             <form className={"issue-form"} onSubmit={handleIssueSubmit}>
                 {error && <div className="issue-error">{error}</div>}
                 {success && <div className="issue-success">{success}</div>}
-                <div className={"issue-card"}>
+                <div className={"issue-card-form"}>
                     <label className={"issue-label"}>Title</label>
                     <input className={"issue-input"} type="text" required value={title} onChange={(e) => setTitle(e.target.value)} />
 
