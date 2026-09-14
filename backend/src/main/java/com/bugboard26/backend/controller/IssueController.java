@@ -10,9 +10,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -43,10 +45,7 @@ public class IssueController {
         issue.setAuthor(currentUser);
 
         if (request.getAssigneeEmail() != null && !request.getAssigneeEmail().isBlank()) {
-            User assignee = userRepository.findByEmail(request.getAssigneeEmail())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "No user found with following email: " + request.getAssigneeEmail()));
-            issue.setAssignee(assignee);
+            issue.setAssignee(resolveAssignee(request.getAssigneeEmail()));
         }
 
         Issue saved = issueRepository.save(issue);
@@ -96,10 +95,38 @@ public class IssueController {
         Issue issue = issueRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Issue not found: " + id));
 
+        User currentUser = getCurrentUser();
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
+        boolean isAssignee = issue.getAssignee() != null
+                && issue.getAssignee().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isAssignee) {
+            throw new AccessDeniedException("You can modify only issues you are assigned to");
+        }
+
+        IssueStatus previousStatus = issue.getStatus();
+        IssueStatus newStatus = request.getStatus() != null ? request.getStatus() : previousStatus;
+
         issue.setTitle((request.getTitle() != null && !request.getTitle().isBlank()) ? request.getTitle() : issue.getTitle());
         issue.setDescription((request.getDescription() != null && !request.getDescription().isBlank()) ? request.getDescription() : issue.getDescription());
-        issue.setStatus(request.getStatus() != null ? request.getStatus() : issue.getStatus());
+        issue.setStatus(newStatus);
         issue.setType(request.getType() != null ? request.getType() : issue.getType());
+        issue.setPriority(request.getPriority() != null ? request.getPriority() : issue.getPriority());
+
+        if (newStatus == IssueStatus.RESOLVED && previousStatus != IssueStatus.RESOLVED) {
+            issue.setResolvedAt(Instant.now());
+            issue.setResolvedBy(currentUser);
+        } else if (newStatus != IssueStatus.RESOLVED && previousStatus == IssueStatus.RESOLVED) {
+            issue.setResolvedAt(null);
+            issue.setResolvedBy(null);
+        }
+
+        if (request.getAssigneeEmail() != null) {
+            if (!isAdmin) {
+                throw new AccessDeniedException("Only an administrator can modify the assignee");
+            }
+            issue.setAssignee(request.getAssigneeEmail().isBlank() ? null : resolveAssignee(request.getAssigneeEmail()));
+        }
 
         Issue saved = issueRepository.save(issue);
         return ResponseEntity.status(HttpStatus.OK).body(new IssueResponse(saved));
@@ -130,5 +157,16 @@ public class IssueController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
+    }
+
+    private User resolveAssignee(String email) {
+        User assignee = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("No user found with following email: " + email));
+
+        if (assignee.getRole() == Role.READONLY) {
+            throw new IllegalArgumentException("You can't assign an issue to a readonly user");
+        }
+
+        return assignee;
     }
 }

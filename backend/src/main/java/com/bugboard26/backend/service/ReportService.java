@@ -30,24 +30,27 @@ public class ReportService {
         List<Issue> opened = issueRepository.findAll(IssueSpecification.createdBetween(start, end));
         List<Issue> resolved = issueRepository.findAll(IssueSpecification.resolvedBetween(start, end));
 
+        int totalIssuesInMonth = opened.size();
+
         Map<User, List<Issue>> openedByAuthor = opened.stream()
                 .collect(Collectors.groupingBy(Issue::getAuthor));
-        Map<User, List<Issue>> resolvedByAssignee = resolved.stream()
-                .filter(i -> i.getAssignee() != null)
-                .collect(Collectors.groupingBy(Issue::getAssignee));
+        Map<User, List<Issue>> resolvedByResolver = resolved.stream()
+                .filter(i -> i.getResolvedBy() != null)
+                .collect(Collectors.groupingBy(Issue::getResolvedBy));
 
         Set<User> allUsers = new HashSet<>();
         allUsers.addAll(openedByAuthor.keySet());
-        allUsers.addAll(resolvedByAssignee.keySet());
+        allUsers.addAll(resolvedByResolver.keySet());
 
         List<UserReportMetrics> perUser = allUsers.stream()
                 .map(u -> {
                     List<Issue> userOpened = openedByAuthor.getOrDefault(u, List.of());
-                    List<Issue> userResolved = resolvedByAssignee.getOrDefault(u, List.of());
+                    List<Issue> userResolved = resolvedByResolver.getOrDefault(u, List.of());
                     return new UserReportMetrics(
                             u.getId(), u.getEmail(),
                             userOpened.size(), userResolved.size(),
-                            avgResolutionHours(userResolved));
+                            avgResolutionHours(userResolved),
+                            resolutionRate(userResolved.size(), totalIssuesInMonth));
                 })
                 .sorted(Comparator.comparing(UserReportMetrics::getEmail))
                 .toList();
@@ -67,5 +70,12 @@ public class ReportService {
                 .map(i -> Duration.between(i.getCreatedAt(), i.getResolvedAt()).toMinutes() / 60.0)
                 .toList();
         return hours.isEmpty() ? null : hours.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+    }
+
+    private double resolutionRate(int userResolvedCount, int totalIssuesInMonth) {
+        if (totalIssuesInMonth == 0) {
+            return 0.0;
+        }
+        return (double) userResolvedCount / totalIssuesInMonth;
     }
 }

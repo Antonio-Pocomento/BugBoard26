@@ -23,6 +23,7 @@ public class IssueResponse {
     private final Instant createdAt;
     private final Instant updatedAt;
     private final Instant resolvedAt;
+    private final UserResponse resolvedBy;
 
     public IssueResponse(Issue issue) {
         this.id = issue.getId();
@@ -37,5 +38,6 @@ public class IssueResponse {
         this.createdAt = issue.getCreatedAt();
         this.updatedAt = issue.getUpdatedAt();
         this.resolvedAt = issue.getResolvedAt();
+        this.resolvedBy = issue.getResolvedBy() != null ? new UserResponse(issue.getResolvedBy()) : null;
     }
 }

@@ -11,4 +11,5 @@ public class UserReportMetrics {
     private long opened;
     private long resolved;
     private Double avgResolutionHours; // null if no issue has been resolved
+    private double resolutionRate;
 }

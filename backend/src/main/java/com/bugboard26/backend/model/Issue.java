@@ -63,6 +63,11 @@ public class Issue {
     @Column(nullable = true)
     private Instant resolvedAt;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "resolved_by_id", nullable = true)
+    @JsonIgnoreProperties({"passwordHash", "hibernateLazyInitializer", "handler"})
+    private User resolvedBy;
+
     @NotNull
     @Column(nullable = false, updatable = false)
     private Instant createdAt;

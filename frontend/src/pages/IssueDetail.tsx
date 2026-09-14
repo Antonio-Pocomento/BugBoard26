@@ -16,6 +16,8 @@ export function IssueDetail() {
     const [description, setDescription] = useState<string>("");
     const [status, setStatus] = useState<IssueStatus>();
     const [type, setType] = useState<IssueType>();
+    const [priority, setPriority] = useState<IssuePriority>();
+    const [assigneeEmail, setAssigneeEmail] = useState<string>("");
 
 
 
@@ -31,6 +33,8 @@ export function IssueDetail() {
             setDescription(data.description);
             setStatus(data.status);
             setType(data.type);
+            setPriority(data.priority);
+            setAssigneeEmail(data.assignee?.email ?? "");
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Errore nel caricamento della issue');
         }
@@ -64,8 +68,6 @@ export function IssueDetail() {
         }
     }
 
-    // @ts-ignore
-    // @ts-ignore
     return (
         <div className={"issueId-page"}>
             {error && <div className="issue-error">{error}</div>}
@@ -75,6 +77,10 @@ export function IssueDetail() {
             <h2><span className={"type-label"}>Tipo: </span><span>{issue?.type}</span></h2>
             <h2><span className={"priority-label"}>Priorità: </span><span>{issue?.priority}</span></h2>
             <h2><span className={"status-label"}>Status: </span><span>{issue?.status}</span></h2>
+            <h2><span className={"assignee-label"}>Assegnatario: </span><span>{issue?.assignee?.email ?? "Nessuno"}</span></h2>
+            {issue?.status === 'RESOLVED' && (
+                <h2><span className={"resolved-by-label"}>Risolto da: </span><span>{issue?.resolvedBy?.email ?? "—"}</span></h2>
+            )}
             <h2><span className={"creation-label"}>Data di creazione: </span><span>{issue?.createdAt}</span></h2>
 
             <div>
@@ -109,6 +115,23 @@ export function IssueDetail() {
                         <option value="ON_HOLD">On_Hold</option>
                         <option value="RESOLVED">Resolved</option>
                     </select>
+                    <select value={priority} onChange={(e) => setPriority(e.target.value as IssuePriority)}>
+                        <option value="UNKNOWN">Unknown</option>
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HIGH">High</option>
+                        <option value="CRITICAL">Critical</option>
+                    </select>
+
+                    {currentUser?.role === 'ADMIN' && (
+                        <input
+                            type="email"
+                            placeholder="Email nuovo assegnatario (vuoto = rimuovi)"
+                            value={assigneeEmail}
+                            onChange={(e) => setAssigneeEmail(e.target.value)}
+                        />
+                    )}
+
                     <button title={"Modifica Issue"} onClick={changeIssue}>Cliccami</button>
                 </div>
             )}
@@ -119,7 +142,12 @@ export function IssueDetail() {
         e.preventDefault();
         setError(null);
         try {
-            const updated = await changeIssueFromId(Number(id), { title, description, status, type });
+            const request: ChangeIssueRequest = { title, description, status, type, priority };
+            if (currentUser?.role === 'ADMIN') {
+                request.assigneeEmail = assigneeEmail;
+            }
+
+            const updated = await changeIssueFromId(Number(id), request);
             setIssue(updated);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Errore nella modifica della issue");

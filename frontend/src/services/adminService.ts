@@ -51,7 +51,7 @@ export const getInfo = async (reportDate?: string): Promise<MonthlyReportInfo> =
             opened: u.opened,
             resolved: u.resolved,
             avgResolutionLabel: formatHours(u.avgResolutionHours),
-            resolutionRateLabel: formatRate(u.opened, u.resolved),
+            resolutionRateLabel: formatRate(u.resolutionRate),
         }))
         .sort((a: UserReportInfo, b: UserReportInfo) => b.resolved - a.resolved);
 
@@ -81,7 +81,6 @@ function formatHours(hours: number | null): string {
     return days > 0 ? `${days}g ${remHours}h` : `${hours.toFixed(1)}h`;
 }
 
-function formatRate(opened: number, resolved: number): string {
-    if (opened === 0) return "—";
-    return `${Math.min(100, Math.round((resolved / opened) * 100))}%`;
+function formatRate(rate: number): string {
+    return `${Math.round(rate * 100)}%`;
 }

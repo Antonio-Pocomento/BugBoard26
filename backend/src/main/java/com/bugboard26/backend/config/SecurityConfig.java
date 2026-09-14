@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/issues/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/issues/**").hasAnyRole("ADMIN", "NORMAL")
+                        .requestMatchers(HttpMethod.PUT, "/issues/**").hasAnyRole("ADMIN", "NORMAL")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -49,7 +50,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 

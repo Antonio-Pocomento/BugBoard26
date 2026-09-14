@@ -15,6 +15,7 @@ export interface Issue {
     author: User;
     assignee?: User | null;
     resolvedAt: string | null;
+    resolvedBy?: User | null;
     createdAt: string;
     updatedAt: string | null;
 }
@@ -32,6 +33,8 @@ export interface ChangeIssueRequest {
     description?: string;
     status?: IssueStatus;
     type?: IssueType;
+    priority?: IssuePriority;
+    assigneeEmail?: string;
 }
 
 
