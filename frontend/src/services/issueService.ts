@@ -8,19 +8,44 @@ const ISSUE_URL = API_URL + "/issues";
 export const createIssue = async (issue: CreateIssueRequest) => {
     const token = localStorage.getItem('JWT');
 
+    const formData = new FormData();
+    formData.append('title', issue.title);
+    formData.append('description', issue.description);
+    formData.append('type', issue.type);
+    if (issue.priority) formData.append('priority', issue.priority);
+    if (issue.assigneeEmail) formData.append('assigneeEmail', issue.assigneeEmail);
+    if (issue.image) formData.append('image', issue.image);
+
     const response = await fetch(ISSUE_URL, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(issue),
+        body: formData,
     });
 
     if (!response.ok) {
         const errorBody = await response.json().catch(()=>null);
         throw new Error(errorBody?.message ?? "Issue Creation Error")
     }
+}
+
+export const getIssueImageObjectUrl = async (imageUrl: string) => {
+    const token = localStorage.getItem('JWT');
+
+    const response = await fetch(`${API_URL}${imageUrl}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error("Error loading image");
+    }
+
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
 }
 
 export const getIssues = async (request: GetIssueRequest) => {

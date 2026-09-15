@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import {changeIssueFromId, createComment, getIssueComments, getIssueFromId} from "../services/issueService.ts";
+import {changeIssueFromId, createComment, getIssueComments, getIssueFromId, getIssueImageObjectUrl} from "../services/issueService.ts";
 import type {ChangeIssueRequest, Issue as IssueModel, IssuePriority, IssueStatus, IssueType} from "../model/Issue.ts";
 import type { Comment } from "../model/Comment.ts";
 import type { User } from "../model/User.ts";
@@ -18,6 +18,7 @@ export function IssueDetail() {
     const [type, setType] = useState<IssueType>();
     const [priority, setPriority] = useState<IssuePriority>();
     const [assigneeEmail, setAssigneeEmail] = useState<string>("");
+    const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
 
 
 
@@ -55,6 +56,32 @@ export function IssueDetail() {
         handleComments();
     }, [id]);
 
+    useEffect(() => {
+        if (!issue?.imageUrl) {
+            setImageObjectUrl(null);
+            return;
+        }
+
+        let cancelled = false;
+        let objectUrl: string | null = null;
+
+        getIssueImageObjectUrl(issue.imageUrl)
+            .then((url) => {
+                if (cancelled) {
+                    URL.revokeObjectURL(url);
+                    return;
+                }
+                objectUrl = url;
+                setImageObjectUrl(url);
+            })
+            .catch(() => setError("Impossibile caricare l'immagine allegata"));
+
+        return () => {
+            cancelled = true;
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+        };
+    }, [issue?.imageUrl]);
+
     async function createFrontendComment(e: React.FormEvent) {
         e.preventDefault();
         if (!id || !text.trim()) return;
@@ -83,6 +110,10 @@ export function IssueDetail() {
                 </header>
 
                 <p className="issueId-description">{issue?.description}</p>
+
+                {imageObjectUrl && (
+                    <img className="issueId-image" src={imageObjectUrl} alt={`Allegato della issue ${issue?.title ?? ""}`} />
+                )}
 
                 <dl className="issueId-meta">
                     <div className="issueId-meta-row">

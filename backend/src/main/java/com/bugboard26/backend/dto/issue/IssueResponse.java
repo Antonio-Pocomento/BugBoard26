@@ -17,7 +17,7 @@ public class IssueResponse {
     private final IssueType type;
     private final IssuePriority priority;
     private final IssueStatus status;
-    private final String imagePath;
+    private final String imageUrl;
     private final UserResponse author;
     private final UserResponse assignee;
     private final Instant createdAt;
@@ -32,7 +32,7 @@ public class IssueResponse {
         this.type = issue.getType();
         this.priority = issue.getPriority();
         this.status = issue.getStatus();
-        this.imagePath = issue.getImagePath();
+        this.imageUrl = issue.getImagePath() != null ? "/issues/images/" + issue.getImagePath() : null;
         this.author = new UserResponse(issue.getAuthor());
         this.assignee = issue.getAssignee() != null ? new UserResponse(issue.getAssignee()) : null;
         this.createdAt = issue.getCreatedAt();

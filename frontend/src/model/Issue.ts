@@ -11,7 +11,7 @@ export interface Issue {
     type: IssueType;
     priority: IssuePriority;
     status: IssueStatus;
-    imagePath?: string | null;
+    imageUrl?: string | null;
     author: User;
     assignee?: User | null;
     resolvedAt: string | null;
@@ -26,6 +26,7 @@ export interface CreateIssueRequest {
     type: IssueType;
     priority?: IssuePriority;
     assigneeEmail?: string;
+    image?: File | null;
 }
 
 export interface ChangeIssueRequest {

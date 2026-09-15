@@ -5,14 +5,17 @@ import com.bugboard26.backend.model.*;
 import com.bugboard26.backend.repository.*;
 import com.bugboard26.backend.dto.comment.*;
 import com.bugboard26.backend.dto.issue.*;
+import com.bugboard26.backend.service.ImageStorageService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 import java.util.List;
@@ -26,15 +29,18 @@ public class IssueController {
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final ImageStorageService imageStorageService;
 
-    public IssueController(IssueRepository issueRepository, UserRepository userRepository, CommentRepository commentRepository) {
+    public IssueController(IssueRepository issueRepository, UserRepository userRepository,
+                           CommentRepository commentRepository, ImageStorageService imageStorageService) {
         this.issueRepository = issueRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.imageStorageService = imageStorageService;
     }
 
-    @PostMapping
-    public ResponseEntity<IssueResponse> createIssue(@RequestBody @Valid CreateIssueRequest request) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<IssueResponse> createIssue(@ModelAttribute @Valid CreateIssueRequest request) {
         User currentUser = getCurrentUser();
 
         Issue issue = new Issue();
@@ -46,6 +52,11 @@ public class IssueController {
 
         if (request.getAssigneeEmail() != null && !request.getAssigneeEmail().isBlank()) {
             issue.setAssignee(resolveAssignee(request.getAssigneeEmail()));
+        }
+
+        MultipartFile image = request.getImage();
+        if (image != null && !image.isEmpty()) {
+            issue.setImagePath(imageStorageService.store(image));
         }
 
         Issue saved = issueRepository.save(issue);
