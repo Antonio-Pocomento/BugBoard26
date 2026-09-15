@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,6 +51,7 @@ class IssueControllerCreateCommentTest {
     private User admin;
     private User assignee;
     private User stranger;
+    private User readonlyUser;
     private Issue issue;
 
     @BeforeEach
@@ -57,6 +59,7 @@ class IssueControllerCreateCommentTest {
         admin = buildUser(1L, "admin@bugboard26.com", Role.ADMIN);
         assignee = buildUser(2L, "dev@bugboard26.com", Role.NORMAL);
         stranger = buildUser(3L, "altro@bugboard26.com", Role.NORMAL);
+        readonlyUser = buildUser(4L, "soloLettura@bugboard26.com", Role.READONLY);
 
         issue = new Issue();
         issue.setId(10L);
@@ -184,6 +187,21 @@ class IssueControllerCreateCommentTest {
 
         assertThatThrownBy(() -> issueController.createComment(99L, request))
                 .isInstanceOf(ResourceNotFoundException.class);
+
+        verify(commentRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Un utente readonly non può aggiungere un commento")
+    void readonlyUserCantAddComment() {
+        authenticateAs(readonlyUser);
+        when(issueRepository.findById(10L)).thenReturn(Optional.of(issue));
+
+        CreateCommentRequest request = new CreateCommentRequest();
+        request.setText("Non dovrebbe essere salvato");
+
+        assertThatThrownBy(() -> issueController.createComment(10L, request))
+                .isInstanceOf(AccessDeniedException.class);
 
         verify(commentRepository, never()).save(any());
     }

@@ -47,6 +47,7 @@ class IssueControllerChangeIssueTest {
     private User admin;
     private User assignee;
     private User stranger;
+    private User readonlyUser;
     private Issue issue;
 
     @BeforeEach
@@ -54,6 +55,7 @@ class IssueControllerChangeIssueTest {
         admin = buildUser(1L, "admin@bugboard26.com", Role.ADMIN);
         assignee = buildUser(2L, "dev@bugboard26.com", Role.NORMAL);
         stranger = buildUser(3L, "altro_utente@bugboard26.com", Role.NORMAL);
+        readonlyUser = buildUser(4L, "soloLettura@bugboard26.com", Role.READONLY);
 
         issue = new Issue();
         issue.setId(10L);
@@ -136,6 +138,43 @@ class IssueControllerChangeIssueTest {
 
         ChangeIssueRequest request = new ChangeIssueRequest();
         request.setTitle("This will not be changed");
+
+        assertThatThrownBy(() -> issueController.changeIssue(10L, request))
+                .isInstanceOf(AccessDeniedException.class);
+
+        verify(issueRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Un utente readonly non assegnatario riceve AccessDeniedException")
+    void readonlyUserCantChangeIssue() {
+        authenticateAs(readonlyUser);
+        when(issueRepository.findById(10L)).thenReturn(Optional.of(issue));
+
+        ChangeIssueRequest request = new ChangeIssueRequest();
+        request.setStatus(IssueStatus.IN_PROGRESS);
+
+        assertThatThrownBy(() -> issueController.changeIssue(10L, request))
+                .isInstanceOf(AccessDeniedException.class);
+
+        verify(issueRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Un utente readonly non può modificare una issue nemmeno se risulta l'assegnatario")
+    void readonlyAssigneeCantChangeIssue() {
+        // Caso limite: normalmente resolveAssignee() impedisce di assegnare una issue
+        // a un utente readonly, quindi questa situazione non dovrebbe verificarsi passando
+        // dall'API. La costruiamo comunque per verificare che il
+        // controller non si affidi solo al controllo "isAssignee", che da solo non basta a
+        // escludere un utente readonly.
+        issue.setAssignee(readonlyUser);
+
+        authenticateAs(readonlyUser);
+        when(issueRepository.findById(10L)).thenReturn(Optional.of(issue));
+
+        ChangeIssueRequest request = new ChangeIssueRequest();
+        request.setStatus(IssueStatus.IN_PROGRESS);
 
         assertThatThrownBy(() -> issueController.changeIssue(10L, request))
                 .isInstanceOf(AccessDeniedException.class);
@@ -265,6 +304,22 @@ class IssueControllerChangeIssueTest {
     }
 
     @Test
+    @DisplayName("Un admin non può riassegnare la issue a un utente readonly")
+    void adminCantAssignIssueToReadonlyUser() {
+        authenticateAs(admin);
+        when(issueRepository.findById(10L)).thenReturn(Optional.of(issue));
+        when(userRepository.findByEmail(readonlyUser.getEmail())).thenReturn(Optional.of(readonlyUser));
+
+        ChangeIssueRequest request = new ChangeIssueRequest();
+        request.setAssigneeEmail(readonlyUser.getEmail());
+
+        assertThatThrownBy(() -> issueController.changeIssue(10L, request))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        verify(issueRepository, never()).save(any());
+    }
+
+    @Test
     @DisplayName("Riassegnare a un'email che non corrisponde a nessun utente lancia IllegalArgumentException")
     void invalidAssigneeEmail() {
         authenticateAs(admin);
@@ -277,4 +332,6 @@ class IssueControllerChangeIssueTest {
         assertThatThrownBy(() -> issueController.changeIssue(10L, request))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+
 }

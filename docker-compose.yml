@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      # host.docker.internal punta all'host, cioè al tuo Postgres locale
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/bugboard26
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    extra_hosts:
+      # Necessario su Linux perché host.docker.internal non è risolto di default
+      # (su Docker Desktop per Mac/Windows non serve, ma non dà fastidio lasciarlo)
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend

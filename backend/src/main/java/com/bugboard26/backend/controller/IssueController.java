@@ -111,6 +111,10 @@ public class IssueController {
         boolean isAssignee = issue.getAssignee() != null
                 && issue.getAssignee().getId().equals(currentUser.getId());
 
+
+        if (currentUser.getRole() == Role.READONLY) {
+            throw new AccessDeniedException("You can't modify issues with readonly role'");
+        }
         if (!isAdmin && !isAssignee) {
             throw new AccessDeniedException("You can modify only issues you are assigned to");
         }
@@ -149,6 +153,11 @@ public class IssueController {
                 .orElseThrow(() -> new ResourceNotFoundException("Issue not found: " + id));
 
         User currentUser = getCurrentUser();
+
+        if (currentUser.getRole() == Role.READONLY) {
+            throw new AccessDeniedException("Readonly users cannot add comments");
+        }
+
         Comment comment = new Comment();
         comment.setText(request.getText());
         comment.setAuthor(currentUser);
