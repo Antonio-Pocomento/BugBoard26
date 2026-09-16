@@ -2,7 +2,7 @@ FROM node:22-slim
 
 WORKDIR /app
 
-# Copiamo prima solo i manifest per sfruttare la cache dei layer Docker
+# Copiamo prima solo i manifest
 COPY package.json package-lock.json ./
 RUN npm ci
 
