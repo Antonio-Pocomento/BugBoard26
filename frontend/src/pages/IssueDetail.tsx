@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import {changeIssueFromId, createComment, getIssueComments, getIssueFromId, getIssueImageObjectUrl} from "../services/issueService.ts";
-import type {ChangeIssueRequest, Issue as IssueModel, IssuePriority, IssueStatus, IssueType} from "../model/Issue.ts";
+import { changeIssueFromId, createComment, getIssueComments, getIssueFromId } from "../services/issueService.ts";
+import type { ChangeIssueRequest, Issue as IssueModel, IssuePriority, IssueStatus, IssueType } from "../model/Issue.ts";
 import type { Comment } from "../model/Comment.ts";
 import type { User } from "../model/User.ts";
 import React, { useEffect, useState } from "react";
@@ -18,17 +18,15 @@ export function IssueDetail() {
     const [type, setType] = useState<IssueType>();
     const [priority, setPriority] = useState<IssuePriority>();
     const [assigneeEmail, setAssigneeEmail] = useState<string>("");
-    const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
-
-
 
     const storedUser = localStorage.getItem('user');
     const currentUser: User | null = storedUser ? JSON.parse(storedUser) : null;
 
     const handleIssue = async () => {
-        setError(null);
+
         try {
             const data = await getIssueFromId(Number(id));
+            setError(null);
             setIssue(data);
             setTitle(data.title);
             setDescription(data.description);
@@ -39,7 +37,7 @@ export function IssueDetail() {
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Errore nel caricamento della issue');
         }
-    }
+    };
 
     const handleComments = async () => {
         setError(null);
@@ -49,38 +47,13 @@ export function IssueDetail() {
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Errore nel caricamento dei commenti');
         }
-    }
+    };
 
     useEffect(() => {
         handleIssue();
         handleComments();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
-
-    useEffect(() => {
-        if (!issue?.imageUrl) {
-            setImageObjectUrl(null);
-            return;
-        }
-
-        let cancelled = false;
-        let objectUrl: string | null = null;
-
-        getIssueImageObjectUrl(issue.imageUrl)
-            .then((url) => {
-                if (cancelled) {
-                    URL.revokeObjectURL(url);
-                    return;
-                }
-                objectUrl = url;
-                setImageObjectUrl(url);
-            })
-            .catch(() => setError("Impossibile caricare l'immagine allegata"));
-
-        return () => {
-            cancelled = true;
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-        };
-    }, [issue?.imageUrl]);
 
     async function createFrontendComment(e: React.FormEvent) {
         e.preventDefault();
@@ -95,10 +68,26 @@ export function IssueDetail() {
         }
     }
 
+    async function changeIssue(e: React.FormEvent) {
+        e.preventDefault();
+        setError(null);
+        try {
+            const request: ChangeIssueRequest = { title, description, status, type, priority };
+            if (currentUser?.role === 'ADMIN') {
+                request.assigneeEmail = assigneeEmail;
+            }
+
+            const updated = await changeIssueFromId(Number(id), request);
+            setIssue(updated);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Errore nella modifica della issue");
+        }
+    }
+
     return (
-        <div className={"issueId-page"}>
-            <div className="issueId-content">
-                {error && <div className="issue-error">{error}</div>}
+        <div className="page-grid-bg issueId-page">
+            <div className="surface-card issueId-content">
+                {error && <div className="alert alert--error">{error}</div>}
 
                 <header className="issueId-header">
                     <h1 className="issueId-title">{issue?.title}</h1>
@@ -110,10 +99,6 @@ export function IssueDetail() {
                 </header>
 
                 <p className="issueId-description">{issue?.description}</p>
-
-                {imageObjectUrl && (
-                    <img className="issueId-image" src={imageObjectUrl} alt={`Allegato della issue ${issue?.title ?? ""}`} />
-                )}
 
                 <dl className="issueId-meta">
                     <div className="issueId-meta-row">
@@ -145,30 +130,47 @@ export function IssueDetail() {
 
                 {currentUser?.role !== 'READONLY' && (
                     <form onSubmit={createFrontendComment} className="comment-form">
-                        <input type="text" value={text} onChange={(e) => setText(e.target.value)} className={"CommentText"} placeholder="Scrivi un commento..." />
-                        <button type="submit" className="HandleComment">Pubblica</button>
+                        <input
+                            type="text"
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                            className="field-input"
+                            placeholder="Scrivi un commento..."
+                        />
+                        <button type="submit" className="btn-secondary">Pubblica</button>
                     </form>
                 )}
 
                 {(currentUser?.role === 'ADMIN' || currentUser?.id === issue?.assignee?.id) && (
-                    <section className="issueId-edit">
+                    <form onSubmit={changeIssue} className="issueId-edit">
                         <h2 className="issueId-section-title">Modifica issue</h2>
                         <div className="issueId-edit-grid">
-                            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Titolo" />
-                            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrizione" />
-                            <select value={type} onChange={(e) => setType(e.target.value as IssueType)}>
+                            <input
+                                type="text"
+                                className="field-input"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Titolo"
+                            />
+                            <textarea
+                                className="field-input"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Descrizione"
+                            />
+                            <select className="field-input" value={type} onChange={(e) => setType(e.target.value as IssueType)}>
                                 <option value="QUESTION">Question</option>
                                 <option value="BUG">Bug</option>
                                 <option value="DOCUMENTATION">Documentation</option>
                                 <option value="FEATURE">Feature</option>
                             </select>
-                            <select value={status} onChange={(e) => setStatus(e.target.value as IssueStatus)}>
+                            <select className="field-input" value={status} onChange={(e) => setStatus(e.target.value as IssueStatus)}>
                                 <option value="TODO">Todo</option>
                                 <option value="IN_PROGRESS">In_Progress</option>
                                 <option value="ON_HOLD">On_Hold</option>
                                 <option value="RESOLVED">Resolved</option>
                             </select>
-                            <select value={priority} onChange={(e) => setPriority(e.target.value as IssuePriority)}>
+                            <select className="field-input" value={priority} onChange={(e) => setPriority(e.target.value as IssuePriority)}>
                                 <option value="UNKNOWN">Unknown</option>
                                 <option value="LOW">Low</option>
                                 <option value="MEDIUM">Medium</option>
@@ -179,6 +181,7 @@ export function IssueDetail() {
                             {currentUser?.role === 'ADMIN' && (
                                 <input
                                     type="email"
+                                    className="field-input"
                                     placeholder="Email nuovo assegnatario (vuoto = rimuovi)"
                                     value={assigneeEmail}
                                     onChange={(e) => setAssigneeEmail(e.target.value)}
@@ -186,26 +189,10 @@ export function IssueDetail() {
                             )}
                         </div>
 
-                        <button title={"Modifica Issue"} onClick={changeIssue} className="save-issue-button">Salva modifiche</button>
-                    </section>
+                        <button type="submit" title="Modifica Issue" className="btn-primary">Salva modifiche</button>
+                    </form>
                 )}
             </div>
         </div>
-    )
-
-    async function changeIssue(e: React.MouseEvent) {
-        e.preventDefault();
-        setError(null);
-        try {
-            const request: ChangeIssueRequest = { title, description, status, type, priority };
-            if (currentUser?.role === 'ADMIN') {
-                request.assigneeEmail = assigneeEmail;
-            }
-
-            const updated = await changeIssueFromId(Number(id), request);
-            setIssue(updated);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Errore nella modifica della issue");
-        }
-    }
+    );
 }

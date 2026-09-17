@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class LocalImageStorageService implements ImageStorageService {
+public class LocalImageStorageService {
 
     private static final Set<String> ALLOWED_CONTENT_TYPES =
             Set.of("image/png", "image/jpeg", "image/webp", "image/gif");
@@ -30,7 +30,6 @@ public class LocalImageStorageService implements ImageStorageService {
         }
     }
 
-    @Override
     public String store(MultipartFile file) {
         validate(file);
 
@@ -49,18 +48,6 @@ public class LocalImageStorageService implements ImageStorageService {
         }
 
         return storedFileName;
-    }
-
-    @Override
-    public void delete(String storedPath) {
-        if (storedPath == null || storedPath.isBlank()) {
-            return;
-        }
-        try {
-            Files.deleteIfExists(uploadRoot.resolve(storedPath).normalize());
-        } catch (IOException e) {
-            throw new UncheckedIOException("Image deletion error", e);
-        }
     }
 
     private void validate(MultipartFile file) {

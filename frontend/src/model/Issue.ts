@@ -47,6 +47,6 @@ export interface GetIssueRequest {
     authorId?: number;
     resolvedAfter?: string;
     resolvedBefore?: string;
-    sortBy?: "createdAt" | "updatedAt" | "resolvedAt" | "priority" | "status" | "type" | "title";
+    sortBy?: "createdAt" | "updatedAt" | "resolvedAt" | "priority" | "type" | "title";
     direction?: "asc" | "desc";
 }

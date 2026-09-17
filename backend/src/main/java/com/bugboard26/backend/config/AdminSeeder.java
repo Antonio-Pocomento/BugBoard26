@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings({"java:S6437", "java:S106"})
 @Component
 public class AdminSeeder implements CommandLineRunner {
 
@@ -35,6 +36,6 @@ public class AdminSeeder implements CommandLineRunner {
             System.out.println("Utente admin creato: " + adminEmail);
         }
         else
-            System.out.println("Utente admin già presente: " + adminEmail);
+            System.out.println("Utente admin già presente: " + adminEmail + "\n[WARNING] ELIMINARE LA CLASSE AdminSeeder");
     }
 }

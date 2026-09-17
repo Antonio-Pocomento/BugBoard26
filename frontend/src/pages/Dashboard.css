@@ -1,43 +1,8 @@
-@import "../theme.css";
-
-.dashboard-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--bb-space-6) var(--bb-space-4);
-    background:
-            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            var(--bb-bg);
-}
+@import "../common.css";
 
 .dashboard-panel {
-    width: 100%;
     max-width: 560px;
-    background: var(--bb-surface);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-md);
-    box-shadow: var(--bb-shadow-2);
     padding: var(--bb-space-6) var(--bb-space-5) var(--bb-space-5);
-}
-
-.dashboard-panel h1 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    color: var(--bb-text);
-    letter-spacing: -0.01em;
-    margin: 0 0 var(--bb-space-5);
-}
-
-.dashboard-panel h1::before {
-    content: "";
-    display: block;
-    width: 28px;
-    height: 3px;
-    background: var(--bb-accent);
-    margin-bottom: var(--bb-space-3);
-    border-radius: 2px;
 }
 
 .dashboard-button-group {
@@ -46,42 +11,8 @@
     gap: var(--bb-space-3);
 }
 
-.dashboard-button {
-    font: 500 0.9rem var(--bb-font-ui);
-    color: var(--bb-text);
-    background: var(--bb-bg-inset);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-md);
-    padding: var(--bb-space-4);
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.dashboard-button:not(:disabled):hover {
-    background: var(--bb-surface-hover);
-    border-color: var(--bb-border-strong);
-}
-
-.dashboard-button:not(:disabled):active {
-    background: var(--bb-bg-inset);
-}
-
-.dashboard-button:disabled {
-    color: var(--bb-text-muted);
-    cursor: not-allowed;
-}
-
-/* Pulsante di Log-out */
-.dashboard-button:last-child {
+/* Il pulsante di logout occupa l'intera riga ed usa la variante di pericolo */
+.dashboard-button-group .btn-secondary--danger {
     grid-column: 1 / -1;
-    background: var(--bb-danger-bg);
-    border-color: var(--bb-danger-border);
-    color: var(--bb-danger);
     margin-top: var(--bb-space-2);
-}
-
-.dashboard-button:last-child:not(:disabled):hover {
-    background: var(--bb-danger-border);
-    border-color: var(--bb-danger);
 }

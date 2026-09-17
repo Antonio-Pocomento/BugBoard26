@@ -1,127 +1,17 @@
-@import "../theme.css";
-
-.reg-page {
-    min-height: 100vh;
-    background:
-            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            var(--bb-bg);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: var(--bb-space-7) var(--bb-space-4);
-}
+@import "../common.css";
 
 .reg-form {
     width: 100%;
     max-width: 420px;
-    background: var(--bb-surface);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-md);
-    padding: var(--bb-space-5);
     display: flex;
     flex-direction: column;
-    box-shadow: var(--bb-shadow-2);
 }
 
-.reg-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--bb-text);
-    margin: 0 0 var(--bb-space-4);
-}
-
-.reg-error {
-    background: var(--bb-danger-bg);
-    border: 1px solid var(--bb-danger-border);
-    color: #f0aab3;
-    padding: var(--bb-space-3) var(--bb-space-4);
-    border-radius: var(--bb-radius-sm);
-    font-size: 0.875rem;
-    margin-bottom: var(--bb-space-4);
-}
-
-.reg-success {
-    background: var(--bb-success-bg);
-    border: 1px solid var(--bb-accent-border);
-    color: var(--bb-accent-strong);
-    padding: var(--bb-space-3) var(--bb-space-4);
-    border-radius: var(--bb-radius-sm);
-    font-size: 0.875rem;
-    margin-bottom: var(--bb-space-4);
-}
-
-.reg-label {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--bb-text-secondary);
-    margin-top: var(--bb-space-3);
-    margin-bottom: var(--bb-space-2);
-}
-
-.reg-label:first-of-type {
-    margin-top: 0;
-}
-
-.reg-form input,
-.reg-form select {
-    background: var(--bb-bg-inset);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-sm);
-    color: var(--bb-text);
-    font-family: var(--bb-font-ui);
-    font-size: 0.9375rem;
-    padding: 10px var(--bb-space-3);
-    width: 100%;
-}
-
-.reg-form select {
-    cursor: pointer;
-    appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, var(--bb-text-secondary) 50%),
-    linear-gradient(135deg, var(--bb-text-secondary) 50%, transparent 50%);
-    background-position: calc(100% - 18px) center, calc(100% - 13px) center;
-    background-size: 5px 5px, 5px 5px;
-    background-repeat: no-repeat;
-}
-
-.reg-form input::placeholder {
-    color: var(--bb-text-muted);
-}
-
-.reg-form input:hover,
-.reg-form select:hover {
-    border-color: var(--bb-border-strong);
-}
-
-.reg-form input:focus,
-.reg-form select:focus {
-    outline: none;
-    border-color: var(--bb-accent);
-    box-shadow: 0 0 0 3px var(--bb-accent-bg);
-}
-
-.submitReg {
+.reg-form .form-actions {
     margin-top: var(--bb-space-5);
-    background: var(--bb-accent);
-    color: #06201c;
-    border: 1px solid var(--bb-accent);
-    border-radius: var(--bb-radius-sm);
-    font-family: var(--bb-font-ui);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    padding: 10px var(--bb-space-4);
-    cursor: pointer;
-    transition: background 0.15s ease;
-}
-
-.submitReg:hover:not(:disabled) {
-    background: var(--bb-accent-strong);
-}
-
-.submitReg:disabled {
-    background: var(--bb-surface-hover);
-    border-color: var(--bb-border);
-    color: var(--bb-text-muted);
-    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--bb-space-3);
+    flex-wrap: wrap;
 }

@@ -1,17 +1,13 @@
-@import "../theme.css";
-
-.report-page-wrapper {
-    min-height: 100vh;
-    background:
-            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            var(--bb-bg);
-}
+@import "../common.css";
 
 .report-page {
     max-width: var(--bb-content-max);
     margin: 0 auto;
     padding: var(--bb-space-6) var(--bb-space-5) var(--bb-space-7);
+}
+
+.report-back-button {
+    margin-right: auto;
 }
 
 .report-controls {
@@ -33,7 +29,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--bb-space-2);
-    box-shadow: var(--bb-shadow-2);
 }
 
 .report-month-input {
@@ -51,25 +46,6 @@
     outline: none;
     border-color: var(--bb-accent);
     box-shadow: 0 0 0 3px var(--bb-accent-bg);
-}
-
-.report-controls .dashboard-button {
-    background: var(--bb-accent);
-    border-color: var(--bb-accent);
-    color: #06201c;
-    font-weight: 600;
-    padding: 8px var(--bb-space-4);
-    font-size: 0.875rem;
-}
-
-.report-controls .dashboard-button:hover:not(:disabled) {
-    background: var(--bb-accent-strong);
-}
-
-.report-controls .dashboard-button:disabled {
-    background: var(--bb-surface-hover);
-    border-color: var(--bb-border);
-    color: var(--bb-text-muted);
 }
 
 .report-placeholder {

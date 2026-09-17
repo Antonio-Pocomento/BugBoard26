@@ -30,7 +30,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .filter(u -> passwordEncoder.matches(request.getPassword(), u.getPasswordHash()))
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException("Credenziali Errate"));
 
         String token = jwtService.generateToken(user);
         return ResponseEntity.ok(new LoginResponse(token, new UserResponse(user)));

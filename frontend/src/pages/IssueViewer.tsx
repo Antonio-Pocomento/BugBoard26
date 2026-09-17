@@ -1,33 +1,31 @@
 import { useEffect, useState } from "react";
-import { type Issue, type IssuePriority, type IssueStatus, type IssueType } from "../model/Issue.ts";
+import { type GetIssueRequest, type Issue, type IssuePriority, type IssueStatus, type IssueType } from "../model/Issue.ts";
 import { getIssues } from "../services/issueService.ts";
-import "./IssueViewer.css"
+import "./IssueViewer.css";
 import { useNavigate } from "react-router-dom";
 
-function MyButton({ title, onClick, disabled }: { title: string, onClick?: () => void, disabled?: boolean }) {
-    return (
-        <button className="dashboard-button" onClick={onClick} disabled={disabled}>{title}</button>
-    );
-}
+type SortBy = NonNullable<GetIssueRequest["sortBy"]>;
+type Direction = NonNullable<GetIssueRequest["direction"]>;
 
-export function IssueViewer(){
+export function IssueViewer() {
     const navigate = useNavigate();
     const [issues, setIssues] = useState<Issue[]>([]);
     const [type, setType] = useState<IssueType | undefined>();
     const [status, setStatus] = useState<IssueStatus | undefined>();
     const [priority, setPriority] = useState<IssuePriority | undefined>();
-    const [sortBy, setSortBy] = useState<string>("createdAt");
-    const [direction, setDirection] = useState<string>("asc");
+    const [sortBy, setSortBy] = useState<SortBy>("createdAt");
+    const [direction, setDirection] = useState<Direction>("asc");
 
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     const handleIssueViewer = async () => {
-        setError(null);
+
         try {
             setIsLoading(true);
-            // @ts-ignore
-            const data = await getIssues({ type, status, priority, sortBy, direction});
+            const filters: GetIssueRequest = { type, status, priority, sortBy, direction };
+            const data = await getIssues(filters);
+            setError(null);
             setIssues(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Errore durante la visualizzazione delle issues!');
@@ -40,26 +38,15 @@ export function IssueViewer(){
         handleIssueViewer();
     }, []);
 
-    return(
-        <div className="issueViewer-page">
-            <div className={"issue-list-wrapper"}>
-                {error && <div className="issue-error">{error}</div>}
-
-                <div className={"issue-list"}>
-                    {issues.map((issue)=>(
-                        <div key={issue.id} className="issue-card" onClick={()=>navigate(`/issueViewer/${issue.id}`)}>
-                            <h3>{issue.title}</h3>
-                            <p>{issue.description}</p>
-                            <div className="issue-card-badges">
-                                <span className={`badge badge-type-${issue.type.toLowerCase()}`}>{issue.type}</span>
-                                <span className={`badge badge-status-${issue.status.toLowerCase()}`}>{issue.status}</span>
-                                <span className={`badge badge-priority-${issue.priority.toLowerCase()}`}>{issue.priority}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+    return (
+        <div className="page-grid-bg">
+            <div className="issue-list-wrapper">
+                {error && <div className="alert alert--error">{error}</div>}
 
                 <div className="filters">
+                    <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
+                        ← Indietro
+                    </button>
                     <select value={type ?? ""} onChange={(e) => setType(e.target.value === "" ? undefined : e.target.value as IssueType)}>
                         <option value="">Tutti i tipi</option>
                         <option value="QUESTION">Question</option>
@@ -82,21 +69,44 @@ export function IssueViewer(){
                         <option value="HIGH">High</option>
                         <option value="CRITICAL">Critical</option>
                     </select>
-                    <select value={sortBy ?? "createdAt"} onChange={(e) => setSortBy(e.target.value)}>
+                    <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}>
                         <option value="createdAt">createdAt</option>
                         <option value="updatedAt">updatedAt</option>
                         <option value="resolvedAt">resolvedAt</option>
                         <option value="priority">priority</option>
-                        <option value="status">status</option>
                         <option value="title">title</option>
                     </select>
-                    <select value={direction ?? "asc"} onChange={(e) => setDirection(e.target.value)}>
+                    <select value={direction} onChange={(e) => setDirection(e.target.value as Direction)}>
                         <option value="asc">asc</option>
                         <option value="desc">desc</option>
                     </select>
-                    <MyButton title={isLoading ? "Caricamento..." : "Filtra Issue"} onClick={handleIssueViewer} disabled={isLoading} />
+                    <button className="btn-secondary btn-secondary--accent" onClick={handleIssueViewer} disabled={isLoading}>
+                        Filtra Issue
+                    </button>
                 </div>
+
+                <div className="issue-list">
+                    {isLoading && issues.length === 0 && (
+                        <p className="issue-list-status">Caricamento delle issue…</p>
+                    )}
+                    {!isLoading && issues.length === 0 && (
+                        <p className="issue-list-status">Nessuna issue trovata.</p>
+                    )}
+                    {issues.map((issue) => (
+                        <div key={issue.id} className="issue-card" onClick={() => navigate(`/issueViewer/${issue.id}`)}>
+                            <h3>{issue.title}</h3>
+                            <p>{issue.description}</p>
+                            <div className="issue-card-badges">
+                                <span className={`badge badge-type-${issue.type.toLowerCase()}`}>{issue.type}</span>
+                                <span className={`badge badge-status-${issue.status.toLowerCase()}`}>{issue.status}</span>
+                                <span className={`badge badge-priority-${issue.priority.toLowerCase()}`}>{issue.priority}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+
             </div>
         </div>
-    )
+    );
 }

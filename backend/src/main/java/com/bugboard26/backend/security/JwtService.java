@@ -3,6 +3,8 @@ package com.bugboard26.backend.security;
 import com.bugboard26.backend.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ import java.util.Date;
 
 @Service
 public class JwtService {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
 
     private final SecretKey signingKey;
     private final long expirationMs;
@@ -50,7 +54,7 @@ public class JwtService {
             parseClaims(token);
             return true;
         } catch (Exception e) {
-            System.err.println("JWT validation failed: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            log.warn("JWT validation failed: {} - {}", e.getClass().getSimpleName(), e.getMessage());
             return false;
         }
     }

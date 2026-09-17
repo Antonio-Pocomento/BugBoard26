@@ -4,15 +4,22 @@ import com.bugboard26.backend.model.Issue;
 import com.bugboard26.backend.model.IssuePriority;
 import com.bugboard26.backend.model.IssueStatus;
 import com.bugboard26.backend.model.IssueType;
+import jakarta.persistence.criteria.Expression;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
 
-/// root = Issue
-/// query = CriteriaQuery
-/// cb = CriteriaBuilder
+// root = Issue
+// query = CriteriaQuery
+// cb = CriteriaBuilder
 
 public class IssueSpecification {
+
+    private IssueSpecification() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Specification<Issue> hasType(IssueType type) {
         return (root, query, cb) ->
                 type == null ? null : cb.equal(root.get("type"), type);
@@ -56,5 +63,21 @@ public class IssueSpecification {
     public static Specification<Issue> resolvedBetween(Instant from, Instant to) {
         return (root, query, cb) ->
                 (from == null || to == null) ? null : cb.between(root.get("resolvedAt"), from, to);
+    }
+
+    public static Specification<Issue> orderByPriority(Sort.Direction direction) {
+        return (root, query, cb) -> {
+            Expression<IssuePriority> priorityPath = root.get("priority");
+            Expression<Integer> priorityRank = cb.<IssuePriority, Integer>selectCase(priorityPath)
+                    .when(IssuePriority.UNKNOWN, 0)
+                    .when(IssuePriority.LOW, 1)
+                    .when(IssuePriority.MEDIUM, 2)
+                    .when(IssuePriority.HIGH, 3)
+                    .when(IssuePriority.CRITICAL, 4)
+                    .otherwise(5);
+
+            query.orderBy(direction == Sort.Direction.ASC ? cb.asc(priorityRank) : cb.desc(priorityRank));
+            return null;
+        };
     }
 }

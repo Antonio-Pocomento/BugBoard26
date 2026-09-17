@@ -1,0 +1,239 @@
+@import "./theme.css";
+
+/* ==========================================================================
+   Layout di pagina
+   ========================================================================== */
+
+/* Sfondo a griglia comune a tutte le pagine */
+.page-grid-bg {
+    min-height: 100vh;
+    background:
+            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
+            var(--bb-bg);
+}
+
+/* Pagina centrata (login, dashboard, form issue/registrazione) */
+.page-centered {
+    display: flex;
+    justify-content: center;
+    padding: var(--bb-space-7) var(--bb-space-4);
+}
+
+.page-centered--middle {
+    align-items: center;
+}
+
+.page-centered--top {
+    align-items: flex-start;
+}
+
+/* Card/pannello contenitore */
+.surface-card {
+    width: 100%;
+    background: var(--bb-surface);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-md);
+    box-shadow: var(--bb-shadow-2);
+    padding: var(--bb-space-5);
+}
+
+.surface-card--raised {
+    background: var(--bb-bg-raised);
+}
+
+/* Titolo di pagina con accento superiore */
+.surface-card__title {
+    margin: 0 0 var(--bb-space-5);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--bb-text);
+    letter-spacing: -0.01em;
+}
+
+.surface-card__title::before {
+    content: "";
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: var(--bb-accent);
+    margin-bottom: var(--bb-space-3);
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   Messaggi di stato
+   ========================================================================== */
+
+.alert {
+    padding: var(--bb-space-3) var(--bb-space-4);
+    border-radius: var(--bb-radius-sm);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: var(--bb-space-4);
+}
+
+.alert--error {
+    background: var(--bb-danger-bg);
+    border: 1px solid var(--bb-danger-border);
+    color: #f0aab3;
+}
+
+.alert--success {
+    background: var(--bb-success-bg);
+    border: 1px solid var(--bb-accent-border);
+    color: var(--bb-accent-strong);
+}
+
+/* ==========================================================================
+   Form: label, input, select, textarea
+   ========================================================================== */
+
+.field-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--bb-text-secondary);
+    margin-top: var(--bb-space-3);
+    margin-bottom: var(--bb-space-2);
+}
+
+.field-label:first-of-type {
+    margin-top: 0;
+}
+
+.field-input {
+    width: 100%;
+    font: 0.9rem var(--bb-font-ui);
+    color: var(--bb-text);
+    background: var(--bb-bg-inset);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-sm);
+    padding: 10px var(--bb-space-3);
+    transition: border-color 0.15s ease;
+}
+
+.field-input::placeholder {
+    color: var(--bb-text-muted);
+}
+
+.field-input:hover {
+    border-color: var(--bb-border-strong);
+}
+
+.field-input:focus {
+    outline: none;
+    border-color: var(--bb-accent);
+    box-shadow: 0 0 0 3px var(--bb-accent-bg);
+}
+
+textarea.field-input {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+select.field-input {
+    cursor: pointer;
+    appearance: none;
+    background-image:
+            linear-gradient(45deg, transparent 50%, var(--bb-text-secondary) 50%),
+            linear-gradient(135deg, var(--bb-text-secondary) 50%, transparent 50%);
+    background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+/* ==========================================================================
+   Bottoni
+   ========================================================================== */
+
+/* Bottone primario */
+.btn-primary {
+    font: 600 0.9rem var(--bb-font-ui);
+    color: #06201c;
+    background: var(--bb-accent);
+    border: 1px solid var(--bb-accent);
+    border-radius: var(--bb-radius-sm);
+    padding: 10px var(--bb-space-4);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--bb-accent-strong);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+    background: var(--bb-surface-hover);
+    border-color: var(--bb-border);
+    color: var(--bb-text-muted);
+    cursor: not-allowed;
+}
+
+/* Bottone secondario/neutro */
+.btn-secondary {
+    font: 500 0.9rem var(--bb-font-ui);
+    color: var(--bb-text);
+    background: var(--bb-bg-inset);
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-md);
+    padding: var(--bb-space-4);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--bb-surface-hover);
+    border-color: var(--bb-border-strong);
+}
+
+.btn-secondary:active:not(:disabled) {
+    background: var(--bb-bg-inset);
+}
+
+.btn-secondary:disabled {
+    color: var(--bb-text-muted);
+    cursor: not-allowed;
+}
+
+/* Variante compatta del bottone secondario */
+.btn-secondary--compact {
+    padding: 8px var(--bb-space-4);
+    font-size: 0.8rem;
+}
+
+/* Variante accentata del bottone secondario */
+.btn-secondary--accent {
+    background: var(--bb-accent);
+    border-color: var(--bb-accent);
+    color: #06201c;
+    font-weight: 600;
+}
+
+.btn-secondary--accent:hover:not(:disabled) {
+    background: var(--bb-accent-strong);
+}
+
+.btn-secondary--accent:disabled {
+    background: var(--bb-surface-hover);
+    border-color: var(--bb-border);
+    color: var(--bb-text-muted);
+}
+
+/* Variante di pericolo (logout, azioni distruttive) */
+.btn-secondary--danger {
+    background: var(--bb-danger-bg);
+    border-color: var(--bb-danger-border);
+    color: var(--bb-danger);
+}
+
+.btn-secondary--danger:hover:not(:disabled) {
+    background: var(--bb-danger-border);
+    border-color: var(--bb-danger);
+}

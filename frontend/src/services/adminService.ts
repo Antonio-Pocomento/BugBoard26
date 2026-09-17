@@ -24,7 +24,7 @@ export const register = async (credentials: CreateUserRequest) => {
     }
 }
 
-// Anno + mese, eg 2026-09
+// Anno-mese, eg 2026-09
 export const getInfo = async (reportDate?: string): Promise<MonthlyReportInfo> => {
     const token = localStorage.getItem('JWT');
     const url = reportDate ? `${INFO_URL}?date=${reportDate}` : `${INFO_URL}`;

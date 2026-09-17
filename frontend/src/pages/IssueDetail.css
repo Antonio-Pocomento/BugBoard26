@@ -1,25 +1,15 @@
-@import "../theme.css";
+@import "../common.css";
 @import "../badges.css";
 
 .issueId-page {
-    min-height: 100vh;
     display: flex;
     justify-content: center;
-    background:
-            linear-gradient(var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            linear-gradient(90deg, var(--bb-border) 1px, transparent 1px) center / 48px 48px,
-            var(--bb-bg);
     padding: var(--bb-space-6) var(--bb-space-4) var(--bb-space-7);
 }
 
 .issueId-content {
-    width: 100%;
     max-width: var(--bb-content-narrow);
     background: var(--bb-bg-raised);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-md);
-    box-shadow: var(--bb-shadow-2);
-    padding: var(--bb-space-6);
 }
 
 .issueId-header {
@@ -121,41 +111,12 @@
     margin-bottom: var(--bb-space-7);
 }
 
-.CommentText {
+.comment-form .field-input {
     flex: 1;
-    font: 0.9rem var(--bb-font-ui);
-    color: var(--bb-text);
-    background: var(--bb-bg-inset);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-sm);
-    padding: 9px var(--bb-space-3);
-    transition: all 0.15s ease;
 }
 
-.CommentText::placeholder {
-    color: var(--bb-text-muted);
-}
-
-.CommentText:focus {
-    outline: none;
-    border-color: var(--bb-accent);
-    box-shadow: 0 0 0 3px var(--bb-accent-bg);
-}
-
-.HandleComment {
-    font: 500 0.9rem var(--bb-font-ui);
-    color: var(--bb-text);
-    background: var(--bb-surface);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-sm);
+.comment-form .btn-secondary {
     padding: 9px var(--bb-space-4);
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.HandleComment:hover {
-    border-color: var(--bb-accent);
-    color: var(--bb-accent-strong);
 }
 
 /* --- Modifica issue --- */
@@ -172,55 +133,7 @@
     margin-bottom: var(--bb-space-4);
 }
 
-/* Raggruppamento globale degli stili input/select/textarea tramite :is() */
-.issueId-edit-grid :is(input, select, textarea) {
-    width: 100%;
-    font: 0.9rem var(--bb-font-ui);
-    color: var(--bb-text);
-    background: var(--bb-bg-inset);
-    border: 1px solid var(--bb-border);
-    border-radius: var(--bb-radius-sm);
-    padding: 9px var(--bb-space-3);
-    transition: all 0.15s ease;
-}
-
-.issueId-edit-grid :is(input, select, textarea):focus {
-    outline: none;
-    border-color: var(--bb-accent);
-    box-shadow: 0 0 0 3px var(--bb-accent-bg);
-}
-
 .issueId-edit-grid input[type="text"]:first-child,
 .issueId-edit-grid textarea {
     grid-column: 1 / -1;
-}
-
-.issueId-edit-grid textarea {
-    min-height: 90px;
-    resize: vertical;
-    line-height: 1.5;
-}
-
-.issueId-edit-grid select {
-    cursor: pointer;
-    appearance: none;
-    background:
-            linear-gradient(45deg, transparent 50%, var(--bb-text-secondary) 50%) calc(100% - 16px) center / 5px 5px no-repeat,
-            linear-gradient(135deg, var(--bb-text-secondary) 50%, transparent 50%) calc(100% - 11px) center / 5px 5px no-repeat,
-            var(--bb-bg-inset);
-}
-
-.save-issue-button {
-    font: 600 0.9rem var(--bb-font-ui);
-    color: #06201c;
-    background: var(--bb-accent);
-    border: 1px solid var(--bb-accent);
-    border-radius: var(--bb-radius-sm);
-    padding: 9px var(--bb-space-5);
-    cursor: pointer;
-    transition: background 0.15s ease;
-}
-
-.save-issue-button:hover {
-    background: var(--bb-accent-strong);
 }

@@ -1,10 +1,12 @@
-import "./Dashboard.css"
+import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { type User } from "../model/User";
 
-function MyButton({ title, onClick }: { title: string, onClick?: () => void }) {
+function NavButton({ title, onClick, danger }: { title: string; onClick?: () => void; danger?: boolean }) {
     return (
-        <button className="dashboard-button" onClick={onClick}>{title}</button>
+        <button className={`btn-secondary ${danger ? 'btn-secondary--danger' : ''}`} onClick={onClick}>
+            {title}
+        </button>
     );
 }
 
@@ -22,21 +24,21 @@ export function Dashboard({ currentUser, onLogout }: DashboardProps) {
     };
 
     return (
-        <div className="dashboard-page">
-            <div className="dashboard-panel">
-                <h1>Benvenuto, {currentUser.email}</h1>
+        <div className="page-grid-bg page-centered page-centered--middle">
+            <div className="surface-card dashboard-panel">
+                <h1 className="surface-card__title">Benvenuto, {currentUser.email}</h1>
                 <div className="dashboard-button-group">
                     {currentUser.role === 'ADMIN' && (
-                        <MyButton title="Registrazione Utenti" onClick={() => navigate('/register')} />
+                        <NavButton title="Registrazione Utenti" onClick={() => navigate('/register')} />
                     )}
                     {currentUser.role !== 'READONLY' && (
-                        <MyButton title="Segnala Problemi" onClick={() => navigate('/issue')} />
+                        <NavButton title="Segnala Problemi" onClick={() => navigate('/issue')} />
                     )}
-                    <MyButton title="Visualizza Problemi" onClick={() => navigate('/issueViewer')} />
+                    <NavButton title="Visualizza Problemi" onClick={() => navigate('/issueViewer')} />
                     {currentUser.role === 'ADMIN' && (
-                        <MyButton title="Visualizza Report Mensili" onClick={() => navigate('/reportViewer')} />
+                        <NavButton title="Visualizza Report Mensili" onClick={() => navigate('/reportViewer')} />
                     )}
-                    <MyButton title="Log-out" onClick={handleLogoutClick} />
+                    <NavButton title="Log-out" onClick={handleLogoutClick} danger />
                 </div>
             </div>
         </div>

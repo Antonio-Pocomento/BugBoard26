@@ -5,7 +5,7 @@ import com.bugboard26.backend.model.*;
 import com.bugboard26.backend.repository.*;
 import com.bugboard26.backend.dto.comment.*;
 import com.bugboard26.backend.dto.issue.*;
-import com.bugboard26.backend.service.ImageStorageService;
+import com.bugboard26.backend.service.LocalImageStorageService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,24 +24,27 @@ import java.util.List;
 @RequestMapping("/issues")
 public class IssueController {
     private static final List<String> ALLOWED_SORT_FIELDS =
-            List.of("createdAt", "updatedAt", "resolvedAt", "priority", "status", "type", "title");
+            List.of("createdAt", "updatedAt", "resolvedAt", "priority", "type", "title");
 
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
-    private final ImageStorageService imageStorageService;
+    private final LocalImageStorageService localImageStorageService;
 
     public IssueController(IssueRepository issueRepository, UserRepository userRepository,
-                           CommentRepository commentRepository, ImageStorageService imageStorageService) {
+                           CommentRepository commentRepository, LocalImageStorageService localImageStorageService) {
         this.issueRepository = issueRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
-        this.imageStorageService = imageStorageService;
+        this.localImageStorageService = localImageStorageService;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<IssueResponse> createIssue(@ModelAttribute @Valid CreateIssueRequest request) {
         User currentUser = getCurrentUser();
+        if (currentUser.getRole() == Role.READONLY) {
+            throw new AccessDeniedException("Readonly users cannot add issues");
+        }
 
         Issue issue = new Issue();
         issue.setTitle(request.getTitle());
@@ -56,7 +59,7 @@ public class IssueController {
 
         MultipartFile image = request.getImage();
         if (image != null && !image.isEmpty()) {
-            issue.setImagePath(imageStorageService.store(image));
+            issue.setImagePath(localImageStorageService.store(image));
         }
 
         Issue saved = issueRepository.save(issue);
@@ -73,7 +76,17 @@ public class IssueController {
                 .and(IssueSpecification.resolvedAfter(request.getResolvedAfter()))
                 .and(IssueSpecification.resolvedBefore(request.getResolvedBefore()));
 
-        Sort sort = buildSort(request.getSortBy(), request.getDirection());
+        String sortField = (request.getSortBy() != null && ALLOWED_SORT_FIELDS.contains(request.getSortBy()))
+                ? request.getSortBy() : "createdAt";
+        Sort.Direction dir = "asc".equalsIgnoreCase(request.getDirection()) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        Sort sort;
+        if ("priority".equals(sortField)) {
+            spec = spec.and(IssueSpecification.orderByPriority(dir));
+            sort = Sort.unsorted(); // l'ordinamento è già nella Specification, altrimenti findAll lo sovrascriverebbe
+        } else {
+            sort = Sort.by(dir, sortField);
+        }
 
         List<IssueResponse> issues = issueRepository.findAll(spec, sort).stream()
                 .map(IssueResponse::new)
@@ -111,37 +124,11 @@ public class IssueController {
         boolean isAssignee = issue.getAssignee() != null
                 && issue.getAssignee().getId().equals(currentUser.getId());
 
+        assertCanModify(currentUser, isAdmin, isAssignee);
 
-        if (currentUser.getRole() == Role.READONLY) {
-            throw new AccessDeniedException("You can't modify issues with readonly role'");
-        }
-        if (!isAdmin && !isAssignee) {
-            throw new AccessDeniedException("You can modify only issues you are assigned to");
-        }
-
-        IssueStatus previousStatus = issue.getStatus();
-        IssueStatus newStatus = request.getStatus() != null ? request.getStatus() : previousStatus;
-
-        issue.setTitle((request.getTitle() != null && !request.getTitle().isBlank()) ? request.getTitle() : issue.getTitle());
-        issue.setDescription((request.getDescription() != null && !request.getDescription().isBlank()) ? request.getDescription() : issue.getDescription());
-        issue.setStatus(newStatus);
-        issue.setType(request.getType() != null ? request.getType() : issue.getType());
-        issue.setPriority(request.getPriority() != null ? request.getPriority() : issue.getPriority());
-
-        if (newStatus == IssueStatus.RESOLVED && previousStatus != IssueStatus.RESOLVED) {
-            issue.setResolvedAt(Instant.now());
-            issue.setResolvedBy(currentUser);
-        } else if (newStatus != IssueStatus.RESOLVED && previousStatus == IssueStatus.RESOLVED) {
-            issue.setResolvedAt(null);
-            issue.setResolvedBy(null);
-        }
-
-        if (request.getAssigneeEmail() != null) {
-            if (!isAdmin) {
-                throw new AccessDeniedException("Only an administrator can modify the assignee");
-            }
-            issue.setAssignee(request.getAssigneeEmail().isBlank() ? null : resolveAssignee(request.getAssigneeEmail()));
-        }
+        applyFieldUpdates(issue, request);
+        applyStatusTransition(issue, request, currentUser);
+        applyAssigneeUpdate(issue, request, isAdmin);
 
         Issue saved = issueRepository.save(issue);
         return ResponseEntity.status(HttpStatus.OK).body(new IssueResponse(saved));
@@ -167,15 +154,52 @@ public class IssueController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new CommentResponse(saved));
     }
 
-    private Sort buildSort(String sortBy, String direction) {
-        String field = (sortBy != null && ALLOWED_SORT_FIELDS.contains(sortBy)) ? sortBy : "createdAt";
-        Sort.Direction dir = "asc".equalsIgnoreCase(direction) ? Sort.Direction.ASC : Sort.Direction.DESC;
-        return Sort.by(dir, field);
+    private void assertCanModify(User currentUser, boolean isAdmin, boolean isAssignee) {
+        if (currentUser.getRole() == Role.READONLY) {
+            throw new AccessDeniedException("You can't modify issues with readonly role'");
+        }
+        if (!isAdmin && !isAssignee) {
+            throw new AccessDeniedException("You can modify only issues you are assigned to");
+        }
+    }
+
+    private void applyFieldUpdates(Issue issue, ChangeIssueRequest request) {
+        issue.setTitle((request.getTitle() != null && !request.getTitle().isBlank()) ? request.getTitle() : issue.getTitle());
+        issue.setDescription((request.getDescription() != null && !request.getDescription().isBlank()) ? request.getDescription() : issue.getDescription());
+        issue.setType(request.getType() != null ? request.getType() : issue.getType());
+        issue.setPriority(request.getPriority() != null ? request.getPriority() : issue.getPriority());
+    }
+
+    private void applyStatusTransition(Issue issue, ChangeIssueRequest request, User currentUser) {
+        IssueStatus previousStatus = issue.getStatus();
+        IssueStatus newStatus = request.getStatus() != null ? request.getStatus() : previousStatus;
+        issue.setStatus(newStatus);
+
+        if (newStatus == IssueStatus.RESOLVED && previousStatus != IssueStatus.RESOLVED) {
+            issue.setResolvedAt(Instant.now());
+            issue.setResolvedBy(currentUser);
+        } else if (newStatus != IssueStatus.RESOLVED && previousStatus == IssueStatus.RESOLVED) {
+            issue.setResolvedAt(null);
+            issue.setResolvedBy(null);
+        }
+    }
+
+    private void applyAssigneeUpdate(Issue issue, ChangeIssueRequest request, boolean isAdmin) {
+        if (request.getAssigneeEmail() == null) {
+            return;
+        }
+        if (!isAdmin) {
+            throw new AccessDeniedException("Only an administrator can modify the assignee");
+        }
+        issue.setAssignee(request.getAssigneeEmail().isBlank() ? null : resolveAssignee(request.getAssigneeEmail()));
     }
 
     private User getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("No authenticated user found");
+        }
+        return userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new IllegalStateException("User not found"));
     }
 
