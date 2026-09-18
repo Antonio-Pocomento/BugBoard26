@@ -4,6 +4,9 @@ import { type IssuePriority, type IssueType } from "../model/Issue.ts";
 import './IssueForm.css';
 import {useNavigate} from "react-router-dom";
 
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB, coerente col limite backend
+const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+
 export function IssueForm() {
     const navigate = useNavigate();
     const [title, setTitle] = useState<string>('');
@@ -11,17 +14,44 @@ export function IssueForm() {
     const [type, setType] = useState<IssueType>("BUG");
     const [priority, setPriority] = useState<IssuePriority>("UNKNOWN");
     const [assigneeEmail, setAssigneeEmail] = useState<string>('');
+    const [image, setImage] = useState<File | null>(null);
+    const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        setError(null);
+
+        if (!file) {
+            setImage(null);
+            setImagePreviewUrl(null);
+            return;
+        }
+
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            setError('Formato immagine non supportato. Usa PNG, JPEG, WEBP o GIF');
+            e.target.value = '';
+            return;
+        }
+        if (file.size > MAX_IMAGE_SIZE_BYTES) {
+            setError("L'immagine supera la dimensione massima di 5MB");
+            e.target.value = '';
+            return;
+        }
+
+        setImage(file);
+        setImagePreviewUrl(URL.createObjectURL(file));
+    };
 
     const handleIssueSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
             setIsLoading(true);
-            await createIssue({ title, description, type, priority, assigneeEmail });
+            await createIssue({ title, description, type, priority, assigneeEmail, image });
             setError(null);
             setSuccess('Issue segnalata con successo!');
             setTitle('');
@@ -29,6 +59,8 @@ export function IssueForm() {
             setType('BUG');
             setPriority('UNKNOWN');
             setAssigneeEmail('');
+            setImage(null);
+            setImagePreviewUrl(null);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Errore durante la segnalazione della issue');
             setSuccess(null);
@@ -68,6 +100,17 @@ export function IssueForm() {
 
                     <label className="field-label">Email Assegnatario (facoltativa)</label>
                     <input className="field-input" type="email" value={assigneeEmail} onChange={(e) => setAssigneeEmail(e.target.value)} />
+
+                    <label className="field-label">Immagine (opzionale)</label>
+                    <input
+                        className="field-input"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        onChange={handleImageChange}
+                    />
+                    {imagePreviewUrl && (
+                        <img className="issue-image-preview" src={imagePreviewUrl} alt="Anteprima allegato" />
+                    )}
 
                     <div className="form-actions">
                         <button type="button" className="btn-secondary" onClick={() => navigate('/')}>

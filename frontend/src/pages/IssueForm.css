@@ -10,6 +10,16 @@
     flex-direction: column;
 }
 
+.issue-image-preview {
+    margin-top: var(--bb-space-3);
+    max-width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    border: 1px solid var(--bb-border);
+    border-radius: var(--bb-radius-sm);
+    background: var(--bb-bg-raised);
+}
+
 .issue-form .form-actions {
     margin-top: var(--bb-space-5);
     display: flex;

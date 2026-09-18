@@ -5,10 +5,9 @@ WORKDIR /app
 # Copiamo prima solo i file di Maven
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN chmod +x mvnw
 
-# Scarichiamo le dipendenze (cache separata dal codice sorgente)
-RUN ./mvnw dependency:go-offline -B
+# Rendiamo eseguibile mvnw e scarichiamo le dipendenze
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
 
 # Ora copiamo il resto del codice
 COPY src ./src
