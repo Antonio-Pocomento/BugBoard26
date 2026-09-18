@@ -14,7 +14,7 @@ services:
       # Necessario su Linux perché host.docker.internal non è risolto di default
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./backend/uploads:/app/uploads
+      - ./uploads:/app/uploads
 
   frontend:
     build:
