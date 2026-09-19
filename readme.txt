@@ -6,7 +6,7 @@ Per avviare il progetto:
 Per il corretto funzionamento del progetto:
 1) Assicurarsi di avere PostgreSQL installato
 2) Assicurarsi di avere un database di nome "bugboard26" con nome utente e password corretti, in base
-alla configurazione del progetto
+alla configurazione del progetto (di default: "postgres" e "password")
 3) Assicurarsi che, se aperto mediante un IDE, questo contenga riferimenti a librerie utilizzate, tra cui
 Lombok
 4) Preferibile utilizzare la stessa versione jdk utilizzata durante lo sviluppo: 21
